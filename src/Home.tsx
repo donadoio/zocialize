@@ -8,33 +8,27 @@
  * @format
  */
 
- import React, {type PropsWithChildren} from 'react';
+ import React, { useEffect } from 'react';
  import {
-   SafeAreaView,
-   ScrollView,
-   StatusBar,
    StyleSheet,
-   Text,
-   useColorScheme,
-   View,
  } from 'react-native';
- import { store } from './redux/store'
-import { useDispatch, useSelector } from 'react-redux'
-import { Button } from "@react-native-material/core";
-import { login, logout, manual } from './redux/auth';
+import { useDispatch, connect, useSelector } from 'react-redux'
 import Login from './components/login/Login';
 import Admin from './components/admin/Admin';
+import { AppStateType, AuthStateType } from './redux/types';
  
 
  
- const Home = () => {
-   const authenticated = useSelector((state) => state.auth.authenticated);
+ const Home: React.FC<{}> = () => {
    const dispatch = useDispatch();
+   const authInfo: AuthStateType = useSelector((state: AppStateType) => state.auth);
+
+   
  
    return (
       <>
-        {!authenticated && <Login />}
-        {authenticated && <Admin />}
+        {(authInfo.authenticated === false) && <Login />}
+        {(authInfo.authenticated === true) && <Admin />}
       </>
    );
  };
@@ -58,5 +52,4 @@ import Admin from './components/admin/Admin';
    },
  });
  
- export default Home;
- 
+export default Home;

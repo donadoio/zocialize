@@ -1,26 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Text,
     View,
     StyleSheet,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    NativeSyntheticEvent, 
+    TextInputChangeEventData
   } from 'react-native';
 import { Button } from '@react-native-material/core';
+import { AppStateType, AuthStateType } from '../../redux/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTokens } from '../../redux/slices/authSlice';
 
-  const onPressLogin = () => {
-    // Do something about login operation
+const Login: React.FC<{}> = () => {
+    const authInfo: AuthStateType = useSelector((state: AppStateType) => state.auth);
+    const [ username, setUsername ] = useState<string>('');
+    const [ password, setPassword ] = useState<string>('');
+    const dispatch = useDispatch();
+
+    const onPressLogin = () => {
+        if (username.length === 0 || password.length === 0) return;
+        dispatch(getTokens({username: username, password: password}));
     };
 
-const Login = () => {
     return (
-        <View style={styles.container}>
+        <>
+        {(authInfo.loading === false) && <View style={styles.container}>
             <Text style={styles.title}>mcgo Studio</Text>
+            <Text style={styles.errorMsg}>{authInfo.error}</Text>
             <View style={styles.inputView}>
                 <TextInput
                 style={styles.inputText}
                 placeholder="Username"
                 placeholderTextColor="#938EA6"
+                value={username}
+                onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) => { setUsername(e.nativeEvent.text); }}
                 />
             </View>
             <View style={styles.inputView}>
@@ -29,13 +44,18 @@ const Login = () => {
                 secureTextEntry
                 placeholder="Password"
                 placeholderTextColor="#938EA6"
+                value={password}
+                onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) => { setPassword(e.nativeEvent.text); }}
                 />
             </View>
-            <TouchableOpacity
-            onPress = {onPressLogin}>
-                <Button title={"LOGIN"} />
+            <TouchableOpacity>
+                <Button title={"LOGIN"} onPress = {onPressLogin} />
             </TouchableOpacity>
-        </View>
+        </View>}
+        {(authInfo.loading === true) && <View style={styles.container}>
+            <Text style={styles.title}>Loading...</Text>
+        </View>}
+        </>
     );
 };
 
@@ -65,7 +85,13 @@ const styles = StyleSheet.create({
         height:50,
         color:"white"
     },
+    errorMsg: {
+        color: "red",
+        fontWeight: "bold",
+        marginBottom: 3,
+    }
 
 });
 
+  
 export default Login;
