@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ScreenInfo } from "../types";
+
+// Types
+export type ScreenType = 'Dashboard' | 'Settings';
+export type ScreenInfo = {
+    current: ScreenType,
+};
 
 const initialState: ScreenInfo = {
     current: 'Dashboard',
