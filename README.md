@@ -31,15 +31,19 @@ volumes:
       device: [INSERT VOLUME FOLDER LOCATION HERE]
 ```
 
-3. Open up a terminal window
+3. Open the Makefile in the /app/ directory (NOT THE ONE IN ROOT DIRECTORY) and edit the values for the Android Debug Bridge (ADB_DIR) and the Device ID, (Run `adb devices` to check)
+
+4. Open up a terminal window
 
 ```bash
 make up
 ```
 
-4. Open a second terminal window
+5. Open Android Studio and a second terminal window
 
 ```bash
 cd app
 make adb && make start
 ```
+
+6. Run the App in Android Studio
