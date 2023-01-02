@@ -6,7 +6,6 @@ import {
   StatusBar,
   TouchableWithoutFeedback,
   Keyboard,
-  View,
 } from 'react-native';
 import {
   Block,
@@ -19,9 +18,6 @@ import {
 import {Button, Icon, Input} from '../components/now';
 import {Images, nowTheme} from '../constants/now';
 import Header from '../components/now/Header';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {AppDispatch} from '../redux/store';
-import {useDispatch} from 'react-redux';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -33,8 +29,7 @@ const DismissKeyboard = ({children}) => {
   );
 };
 
-const Login: React.FC = props => {
-  const dispatch: AppDispatch = useDispatch();
+const Register: React.FC = props => {
   return (
     <DismissKeyboard>
       <>
@@ -53,7 +48,7 @@ const Login: React.FC = props => {
                     }}
                     color="#333"
                     size={24}>
-                    Welcome
+                    Get Started
                   </Text>
                 </Block>
 
@@ -62,13 +57,29 @@ const Login: React.FC = props => {
                     <Block center flex>
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
-                          placeholder="Nickname"
+                          placeholder="Username"
                           style={styles.inputs}
                           iconContent={
                             <Icon
                               size={16}
                               color="#ADB5BD"
                               name="person"
+                              family="MaterialIcons"
+                              style={styles.inputIcons}
+                            />
+                          }
+                        />
+                      </Block>
+
+                      <Block width={width * 0.8} style={{marginBottom: 5}}>
+                        <Input
+                          placeholder="Email"
+                          style={styles.inputs}
+                          iconContent={
+                            <Icon
+                              size={16}
+                              color="#ADB5BD"
+                              name="email"
                               family="MaterialIcons"
                               style={styles.inputIcons}
                             />
@@ -93,45 +104,35 @@ const Login: React.FC = props => {
                         />
                       </Block>
 
-                      <Block center>
-                        <TouchableOpacity
-                          onPress={() => {
-                            console.log('HI!');
-                          }}>
-                          <View>
-                            <Text
-                              style={{
-                                fontFamily: 'montserrat-regular',
-                                marginVertical: 10,
-                              }}
-                              muted>
-                              Forgot Password?
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                        <Button color="primary" round style={styles.formButton}>
-                          <Text
-                            style={{fontFamily: 'montserrat-bold'}}
-                            size={14}
-                            color={nowTheme.COLORS.WHITE}>
-                            Log in
-                          </Text>
-                        </Button>
-                        <Button
-                          color="secondary"
-                          round
-                          style={styles.formButton}
-                          onPress={() => {
-                            props.navigation.navigate('Register');
-                          }}>
-                          <Text
-                            style={{fontFamily: 'montserrat-bold'}}
-                            size={14}
-                            color={nowTheme.COLORS.WHITE}>
-                            Sign up
-                          </Text>
-                        </Button>
+                      <Block
+                        style={{
+                          marginVertical: theme.SIZES.BASE,
+                          marginLeft: 15,
+                        }}
+                        row
+                        width={width * 0.75}>
+                        <Checkbox
+                          checkboxStyle={{
+                            borderWidth: 1,
+                            borderRadius: 2,
+                            borderColor: '#E3E3E3',
+                          }}
+                          color={nowTheme.COLORS.PRIMARY}
+                          labelStyle={{
+                            color: nowTheme.COLORS.HEADER,
+                            fontFamily: 'montserrat-regular',
+                          }}
+                          label="I agree to the terms and conditions."
+                        />
                       </Block>
+                      <Button color="primary" round style={styles.createButton}>
+                        <Text
+                          style={{fontFamily: 'montserrat-bold'}}
+                          size={14}
+                          color={nowTheme.COLORS.WHITE}>
+                          Register
+                        </Text>
+                      </Button>
                     </Block>
                   </Block>
                 </Block>
@@ -209,10 +210,10 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     paddingBottom: 15,
   },
-  formButton: {
+  createButton: {
     width: width * 0.5,
-    marginTop: 5,
-    marginBottom: 10,
+    marginTop: 25,
+    marginBottom: 40,
   },
   social: {
     width: theme.SIZES.BASE * 3.5,
@@ -223,4 +224,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Register;

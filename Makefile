@@ -1,7 +1,19 @@
+fclean: clean
+	@ sudo rm -rf ./volumes
+	@ mkdir -pv ./volumes/api
 
-adb:
-	@ ~/Android/Sdk/platform-tools/adb -s MFLFMZB66DOBVC59 reverse tcp\:8081 tcp\:8081
-	@ ~/Android/Sdk/platform-tools/adb -s MFLFMZB66DOBVC59 reverse tcp\:3000 tcp\:3000
+clean:
+	@ docker rmi zocialize-api:donado
 
-start:
-	@ react-native start --reset-cache
+re: changes-from-volumes down fclean up
+
+up:
+	@ mkdir -pv ./volumes/api
+	@ docker-compose up --build
+
+down:
+	@ docker-compose down --volumes
+
+changes-from-volumes:
+	@ rm -rf ./api/nestjs
+	@ cp -r ./volumes/api ./api/nestjs

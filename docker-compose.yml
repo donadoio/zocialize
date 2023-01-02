@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  zocialize-api:
+    build: api
+    image: zocialize-api:donado
+    container_name: zocialize-api
+    depends_on:
+      - zocialize-db
+    ports:
+      - 3000:3000
+      - 5555:5555
+    environment:
+      - DATABASE_URL
+      - SECRET
+      - REFRESH_TOKEN_SECRET
+      - ACCESS_TOKEN_SECRET
+      - CLIENT_REFRESH_TOKEN_SECRET
+      - CLIENT_ACCESS_TOKEN_SECRET
+      - BACKEND_URL
+    networks:
+      - app_default
+    volumes:
+      - mcgstudio_api:/home/node/app
+    restart: always
+
+  zocialize-db:
+    image: postgres:14.2
+    container_name: zocialize-db
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    networks:
+      - app_default
+    restart: always
+
+volumes:
+  zocialize_api:
+    name: zocialize_api_volume
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/idonado/goinfre/zocialize/volumes/api
+
+networks:
+
+  app_default:
+    driver: bridge

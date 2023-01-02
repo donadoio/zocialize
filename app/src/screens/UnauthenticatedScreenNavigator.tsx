@@ -2,7 +2,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {nowTheme} from '../constants/now';
 import Onboarding from './Onboarding';
-import Pro from './Pro';
+import Login from './Login';
 import Register from './Register';
 import {NavigationContainer} from '@react-navigation/native';
 
@@ -27,7 +27,7 @@ const UnauthenticatedScreenNavigator: React.FC = () => {
         />
         <Stack.Screen
           name="Login"
-          component={Pro}
+          component={Login}
           options={{
             title: 'Login',
             headerShown: false,

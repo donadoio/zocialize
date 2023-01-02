@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   ImageBackground,
@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableWithoutFeedback,
   Keyboard,
+  View,
 } from 'react-native';
 import {
   Block,
@@ -18,6 +19,10 @@ import {
 import {Button, Icon, Input} from '../components/now';
 import {Images, nowTheme} from '../constants/now';
 import Header from '../components/now/Header';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {AppDispatch} from '../redux/store';
+import {useDispatch} from 'react-redux';
+import {useTranslation} from 'react-i18next';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -29,7 +34,11 @@ const DismissKeyboard = ({children}) => {
   );
 };
 
-const Register: React.FC = props => {
+const Login: React.FC = props => {
+  const dispatch: AppDispatch = useDispatch();
+  const {t} = useTranslation();
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   return (
     <DismissKeyboard>
       <>
@@ -48,7 +57,7 @@ const Register: React.FC = props => {
                     }}
                     color="#333"
                     size={24}>
-                    Get Started
+                    Welcome
                   </Text>
                 </Block>
 
@@ -57,29 +66,13 @@ const Register: React.FC = props => {
                     <Block center flex>
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
-                          placeholder="Nickname"
+                          placeholder="Username"
                           style={styles.inputs}
                           iconContent={
                             <Icon
                               size={16}
                               color="#ADB5BD"
                               name="person"
-                              family="MaterialIcons"
-                              style={styles.inputIcons}
-                            />
-                          }
-                        />
-                      </Block>
-
-                      <Block width={width * 0.8} style={{marginBottom: 5}}>
-                        <Input
-                          placeholder="Email"
-                          style={styles.inputs}
-                          iconContent={
-                            <Icon
-                              size={16}
-                              color="#ADB5BD"
-                              name="email"
                               family="MaterialIcons"
                               style={styles.inputIcons}
                             />
@@ -104,35 +97,45 @@ const Register: React.FC = props => {
                         />
                       </Block>
 
-                      <Block
-                        style={{
-                          marginVertical: theme.SIZES.BASE,
-                          marginLeft: 15,
-                        }}
-                        row
-                        width={width * 0.75}>
-                        <Checkbox
-                          checkboxStyle={{
-                            borderWidth: 1,
-                            borderRadius: 2,
-                            borderColor: '#E3E3E3',
-                          }}
-                          color={nowTheme.COLORS.PRIMARY}
-                          labelStyle={{
-                            color: nowTheme.COLORS.HEADER,
-                            fontFamily: 'montserrat-regular',
-                          }}
-                          label="I agree to the terms and conditions."
-                        />
+                      <Block center>
+                        <TouchableOpacity
+                          onPress={() => {
+                            console.log('HI!');
+                          }}>
+                          <View>
+                            <Text
+                              style={{
+                                fontFamily: 'montserrat-regular',
+                                marginVertical: 10,
+                              }}
+                              muted>
+                              Forgot Password?
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                        <Button color="primary" round style={styles.formButton}>
+                          <Text
+                            style={{fontFamily: 'montserrat-bold'}}
+                            size={14}
+                            color={nowTheme.COLORS.WHITE}>
+                            Log in
+                          </Text>
+                        </Button>
+                        <Button
+                          color="secondary"
+                          round
+                          style={styles.formButton}
+                          onPress={() => {
+                            props.navigation.navigate('Register');
+                          }}>
+                          <Text
+                            style={{fontFamily: 'montserrat-bold'}}
+                            size={14}
+                            color={nowTheme.COLORS.WHITE}>
+                            Sign up
+                          </Text>
+                        </Button>
                       </Block>
-                      <Button color="primary" round style={styles.createButton}>
-                        <Text
-                          style={{fontFamily: 'montserrat-bold'}}
-                          size={14}
-                          color={nowTheme.COLORS.WHITE}>
-                          Register
-                        </Text>
-                      </Button>
                     </Block>
                   </Block>
                 </Block>
@@ -210,10 +213,10 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     paddingBottom: 15,
   },
-  createButton: {
+  formButton: {
     width: width * 0.5,
-    marginTop: 25,
-    marginBottom: 40,
+    marginTop: 5,
+    marginBottom: 10,
   },
   social: {
     width: theme.SIZES.BASE * 3.5,
@@ -224,4 +227,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Register;
+export default Login;
