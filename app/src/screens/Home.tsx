@@ -1,98 +1,106 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  TouchableOpacity,
   ImageBackground,
-  Image,
-  View
 } from 'react-native';
-import { Button, Block, Text, theme, Input, DeckSwiper } from 'galio-framework';
+import {Button, Block, Text, theme} from 'galio-framework';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Images, materialTheme, products } from '../constants';
-import { Product, Select, Switch } from '../components';
-import Header from '../components/Header';
+import {Images} from '../constants';
 import axiosInstanceGenerator from '../util/axiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { REACT_APP_BACKEND_URL } from '@env';
-import { useDispatch, useSelector } from 'react-redux';
-import { AuthStateType, getAuthInfo, getProfile, testDispatch } from '../redux/slices/authSlice';
+import {REACT_APP_BACKEND_URL} from '@env';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  AuthStateType,
+  getAuthInfo,
+  getProfile,
+  testDispatch,
+} from '../redux/slices/authSlice';
+import Card from '../components/Card';
 
-const { width } = Dimensions.get('screen');
+const {width} = Dimensions.get('screen');
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
-const Home: React.FC<any> = (props) => {
+const Home: React.FC<any> = props => {
   const dispatch = useDispatch();
   const authInfo: AuthStateType = useSelector(getAuthInfo);
 
-  const getData = async (key:string) => {
+  const getData = async (key: string) => {
     try {
-      const value = await AsyncStorage.getItem(key)
-      if(value !== null) {
+      const value = await AsyncStorage.getItem(key);
+      if (value !== null) {
         // value previously stored
         return value;
+      } else {
+        return '';
       }
-      else {
-        return "";
-      }
-    } catch(e) {
+    } catch (e) {
       // error reading value
-      return "";
+      return '';
     }
-  }
+  };
 
   const renderPhotoPost = () => {
-      return (
-        <Block flex style={styles.group}>
-        <Block flex>
-          <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
-        <Product product={products[4]} full />
-        <Product product={products[4]} full />
-        <Product product={products[4]} full />
-        </Block>
-        </Block>
-        </Block>
-      );
-  }
-  
+    return (
+      <Card
+        item={{
+          title: 'The time is now for it to be okay to be',
+          image: require('../assets/imgs/project15.jpg'),
+          horizontal: true,
+        }}
+        full
+      />
+    );
+  };
+
   const fetchProfile = async () => {
     let accessToken: string = await getData('@access');
     let refreshToken: string = await getData('@refresh');
-    let axiosInstance = axiosInstanceGenerator(REACT_APP_BACKEND_URL, accessToken, refreshToken);
+    let axiosInstance = axiosInstanceGenerator(
+      REACT_APP_BACKEND_URL,
+      accessToken,
+      refreshToken,
+    );
     let response = await axiosInstance.get('/user/getprofile');
 
     if (response.status === 200) {
-      console.log("Data: ", response.data);
+      console.log('Data: ', response.data);
     }
   };
 
   return (
     <>
-    <Button onPress={()=>{
-      dispatch(getProfile({accessToken: authInfo.access_token}));
-    }}>{"Fetch profile"}</Button>
-    <Button onPress={()=>{
-      dispatch(testDispatch());
-    }}>{"Fetch profile"}</Button>
+      <Button
+        onPress={() => {
+          dispatch(getProfile({accessToken: authInfo.access_token}));
+        }}>
+        {'Fetch profile'}
+      </Button>
+      <Button
+        onPress={() => {
+          dispatch(testDispatch());
+        }}>
+        {'Fetch profile'}
+      </Button>
       <Block flex center>
         <ScrollView
-          style={styles.components}
-          showsVerticalScrollIndicator={false}>
-            {renderPhotoPost()}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{paddingBottom: 30, width}}>
+          {renderPhotoPost()}
         </ScrollView>
       </Block>
     </>
   );
-}
+};
 
 export default Home;
 
-
 const styles = StyleSheet.create({
   components: {
-    width: width
+    width: width,
   },
   title: {
     paddingVertical: theme.SIZES.BASE,
@@ -103,20 +111,20 @@ const styles = StyleSheet.create({
   },
   shadow: {
     shadowColor: 'black',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 4,
     shadowOpacity: 0.2,
     elevation: 2,
   },
   button: {
     marginBottom: theme.SIZES.BASE,
-    width: width - (theme.SIZES.BASE * 2),
+    width: width - theme.SIZES.BASE * 2,
   },
   optionsText: {
     fontSize: theme.SIZES.BASE * 0.75,
     color: '#4A4A4A',
-    fontWeight: "normal",
-    fontStyle: "normal",
+    fontWeight: 'normal',
+    fontStyle: 'normal',
     letterSpacing: -0.29,
   },
   optionsButton: {
@@ -155,6 +163,6 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     alignSelf: 'center',
     width: thumbMeasure,
-    height: thumbMeasure
+    height: thumbMeasure,
   },
 });

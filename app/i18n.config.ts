@@ -1,6 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { en, es } from './src/translations';
+import { en, es } from './src/constants/translations';
 
 //empty for now
 const resources = {

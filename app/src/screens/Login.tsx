@@ -7,6 +7,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   View,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
 } from 'react-native';
 import {
   Block,
@@ -16,13 +18,15 @@ import {
   theme,
 } from 'galio-framework';
 
-import {Button, Icon, Input} from '../components/now';
-import {Images, nowTheme} from '../constants/now';
-import Header from '../components/now/Header';
+import {Button, Icon, Input} from '../components';
+import {Images, appTheme} from '../constants';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {AppDispatch} from '../redux/store';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
+import {AuthStateType, getAuthInfo, getTokens} from '../redux/slices/authSlice';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {type RootStackParamList} from './UnauthenticatedScreenNavigator';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -34,11 +38,18 @@ const DismissKeyboard = ({children}) => {
   );
 };
 
-const Login: React.FC = props => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
+
+const Login: React.FC<Props> = ({route, navigation}: Props) => {
   const dispatch: AppDispatch = useDispatch();
   const {t} = useTranslation();
+  const authInfo: AuthStateType = useSelector(getAuthInfo);
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const onPressLogin = () => {
+    if (username.length === 0 || password.length === 0) return;
+    dispatch(getTokens({username: username, password: password}));
+  };
   return (
     <DismissKeyboard>
       <>
@@ -64,10 +75,25 @@ const Login: React.FC = props => {
                 <Block flex={1} middle>
                   <Block center flex={0.9}>
                     <Block center flex>
+                      <Text
+                        style={{
+                          fontFamily: 'montserrat-regular',
+                          marginVertical: 10,
+                          color: appTheme.COLORS.ERROR,
+                        }}
+                        muted>
+                        {authInfo.error}
+                      </Text>
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
                           placeholder="Username"
                           style={styles.inputs}
+                          value={username}
+                          onChange={(
+                            e: NativeSyntheticEvent<TextInputChangeEventData>,
+                          ) => {
+                            setUsername(e.nativeEvent.text);
+                          }}
                           iconContent={
                             <Icon
                               size={16}
@@ -85,6 +111,12 @@ const Login: React.FC = props => {
                           placeholder="Password"
                           style={styles.inputs}
                           password={true}
+                          value={password}
+                          onChange={(
+                            e: NativeSyntheticEvent<TextInputChangeEventData>,
+                          ) => {
+                            setPassword(e.nativeEvent.text);
+                          }}
                           iconContent={
                             <Icon
                               size={16}
@@ -113,11 +145,15 @@ const Login: React.FC = props => {
                             </Text>
                           </View>
                         </TouchableOpacity>
-                        <Button color="primary" round style={styles.formButton}>
+                        <Button
+                          color="primary"
+                          round
+                          style={styles.formButton}
+                          onPress={onPressLogin}>
                           <Text
                             style={{fontFamily: 'montserrat-bold'}}
                             size={14}
-                            color={nowTheme.COLORS.WHITE}>
+                            color={appTheme.COLORS.WHITE}>
                             Log in
                           </Text>
                         </Button>
@@ -131,7 +167,7 @@ const Login: React.FC = props => {
                           <Text
                             style={{fontFamily: 'montserrat-bold'}}
                             size={14}
-                            color={nowTheme.COLORS.WHITE}>
+                            color={appTheme.COLORS.WHITE}>
                             Sign up
                           </Text>
                         </Button>
@@ -163,9 +199,9 @@ const styles = StyleSheet.create({
     marginTop: 55,
     width: width * 0.9,
     height: height < 812 ? height * 0.8 : height * 0.8,
-    backgroundColor: nowTheme.COLORS.WHITE,
+    backgroundColor: appTheme.COLORS.WHITE,
     borderRadius: 4,
-    shadowColor: nowTheme.COLORS.BLACK,
+    shadowColor: appTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -176,7 +212,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   registerTitle: {
-    backgroundColor: nowTheme.COLORS.WHITE,
+    backgroundColor: appTheme.COLORS.WHITE,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(136, 152, 170, 0.3)',
     paddingVertical: 15,
@@ -185,7 +221,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 40,
     backgroundColor: '#fff',
-    shadowColor: nowTheme.COLORS.BLACK,
+    shadowColor: appTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -195,13 +231,13 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   socialTextButtons: {
-    color: nowTheme.COLORS.PRIMARY,
+    color: appTheme.COLORS.PRIMARY,
     fontWeight: '800',
     fontSize: 14,
   },
   inputIcons: {
     marginRight: 12,
-    color: nowTheme.COLORS.ICON_INPUT,
+    color: appTheme.COLORS.ICON_INPUT,
   },
   inputs: {
     borderWidth: 1,
