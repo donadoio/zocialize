@@ -18,7 +18,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     async validate(req: Request, payload: any)
     {
-      //console.log(req.url);
         try
         {
           const user: User = await this.prisma.user.findUnique({
@@ -28,15 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           });
           if (user)
           {
-            if (user.emailConfirmed === false)
-            {
-              throw new HttpException('email not confirmed', 318);
-              //throw new ImATeapotException('nickname not set');
-            }
-            else
-            {
-              return (payload);
-            }
+            return payload;
           }
           else
           {
@@ -45,8 +36,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         }
         catch(error)
         {
-          //console.log('Error in validate():');
-          //console.log(error);
           throw error;
         }
     }

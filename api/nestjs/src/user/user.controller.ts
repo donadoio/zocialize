@@ -82,4 +82,16 @@ export class UserController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('getprofile')
+  async getprofile(@Req() req: ReqExtractId) {
+    console.log('POST / user/getprofile');
+    try {
+      const result = await this.UserService.getProfile(req.user.sub);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }

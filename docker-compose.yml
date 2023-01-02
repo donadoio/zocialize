@@ -21,7 +21,7 @@ services:
     networks:
       - app_default
     volumes:
-      - mcgstudio_api:/home/node/app
+      - zocialize_api:/home/node/app
     restart: always
 
   zocialize-db:

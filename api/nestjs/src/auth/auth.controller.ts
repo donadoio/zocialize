@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { ReqExtractId } from '../../types/ReqExtractId';
 import { ReqRefreshTokens } from '../../types/ReqRefreshTokens';
 import {AllExceptionsFilter} from './all-exception.filter';
+import { LoginType } from 'types/LoginType';
 
 @UseFilters(new AllExceptionsFilter())
 @Controller('auth')
@@ -26,12 +27,32 @@ export class AuthController {
 
     }
 
-    @UseGuards(AuthGuard('jwt'))
+    @Post('makeadmin')
+    @HttpCode(HttpStatus.OK)
+    async makeAdmin(@Body() data: any) {
+        try {
+            const result = await this.authService.makeAdmin(data);
+            return result;
+        }
+        catch (e) {
+            throw e;
+        }
+    }
+
     @Post('login')
     @HttpCode(HttpStatus.OK)
-    async login()
+    async login(@Body() data: LoginType)
     {
         console.log('POST /auth/login');
+        try {
+            const result = await this.authService.login(data);
+            console.log(result);
+            return result;
+        }
+        catch (e) {
+            console.log(e);
+            throw e;
+        }
     }
 
     @UseGuards(AuthGuard('jwt'))
@@ -64,8 +85,7 @@ export class AuthController {
         {
             const userId: number = req.user.sub;
             const refreshToken: string = req.user.refreshToken;
-            const isEmailConfirmed: boolean = req.user.emailConfirmed;
-            const result = await this.authService.refreshTokens(userId, refreshToken, isEmailConfirmed);
+            const result = await this.authService.refreshTokens(userId, refreshToken);
             return (result);
         }
         catch(error)

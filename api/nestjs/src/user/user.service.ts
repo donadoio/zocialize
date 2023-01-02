@@ -81,4 +81,28 @@ export class UserService {
     }
   }
 
+  async getProfile(id: number) {
+    try {
+      const user: User = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        }
+      });
+      if (user) {
+        return {
+          nickname: user.nickname,
+          id: user.id,
+        };
+      } else {
+        throw new HttpException("woops", HttpStatus.BAD_REQUEST);
+      }
+    } catch(error) {
+      if (error instanceof PrismaClientKnownRequestError)
+      {
+          throw new HttpException("woops", HttpStatus.BAD_REQUEST);
+      }
+      throw error;
+    }
+  }
+
 }
