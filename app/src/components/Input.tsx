@@ -30,7 +30,7 @@ const customInput: React.FC = props => {
           size={14}
           color={appTheme.COLORS.ICON}
           name="link"
-          family="AntDesign"
+          family="MaterialIcons"
         />
       }
       {...props}

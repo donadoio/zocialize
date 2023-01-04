@@ -29,6 +29,7 @@ export type ConfirmEmailFulfilled = {
   access_token: string;
   refresh_token: string;
 };
+export type RegisterAccountFulfilled = {};
 export type ValidationError = {
   error: string;
   statusCode: string;
@@ -78,7 +79,6 @@ export const confirmEmail = createAsyncThunk<
   'auth/confirmEmail',
   async (verificationCode, {getState, rejectWithValue}) => {
     try {
-      console.log('verifyCodE: ', verificationCode);
       const access_token: string | null | undefined =
         getState().auth.access_token;
       const response = await axios.post(
@@ -114,25 +114,45 @@ export const confirmEmail = createAsyncThunk<
   },
 );
 
-export const getProfile = createAsyncThunk(
-  'auth/getProfile',
-  async (userInfo: {accessToken: string}) => {
-    try {
-      const response = await axios.get(
-        `${REACT_APP_BACKEND_URL}/user/getprofile`,
-        {
-          headers: {
-            Authorization: `Bearer ${userInfo.accessToken}`,
-          },
-        },
-      );
-      console.log('In getProfile thunk:', response.data);
-      return await response.data;
-    } catch (e) {
-      return Promise.reject(e.message);
+export const registerAccount = createAsyncThunk<
+  RegisterAccountFulfilled,
+  any,
+  {
+    state: RootState;
+    rejectWithValue: ValidationError;
+  }
+>('auth/registerAccount', async (data, {getState, rejectWithValue}) => {
+  try {
+    const access_token: string | null | undefined =
+      getState().auth.access_token;
+    const response = await axios.post(
+      `${REACT_APP_BACKEND_URL}/auth/register`,
+      {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      },
+    );
+    return await response.data;
+  } catch (e: AxiosError | any) {
+    if (e.response) {
+      return rejectWithValue(e.response.data);
+    } else if (e.request) {
+      console.log('Request: ', e.request);
+      return rejectWithValue({
+        error: 'Error',
+        statusCode: 'No response',
+        message: 'Something went wrong.',
+      });
+    } else {
+      return rejectWithValue({
+        error: 'Error',
+        statusCode: 'No request',
+        message: 'Something went wrong.',
+      });
     }
-  },
-);
+  }
+});
 
 // Slice
 export const authSlice = createSlice({
@@ -165,8 +185,8 @@ export const authSlice = createSlice({
       state.refresh_token = action.payload.refresh_token;
       state.refreshTokenPromise = null;
     },
-    testDispatch: (state: AuthStateType) => {
-      console.log('In test dispatch');
+    authUpdateErrorMsg: (state: AuthStateType, action) => {
+      state.error = action.payload;
     },
   },
   extraReducers(builder) {
@@ -201,12 +221,22 @@ export const authSlice = createSlice({
         state.access_token = action.payload.access_token;
         state.refresh_token = action.payload.refresh_token;
       })
-      .addCase(getProfile.fulfilled, (state, action) => {
-        console.log('In getProfilefulfilled: ');
-        console.log(action.payload);
+      .addCase(registerAccount.pending, (state, action) => {
+        state.loading = true;
       })
-      .addCase(getProfile.rejected, (state, action) => {
-        console.log('In getprofiled rejected');
+      .addCase(registerAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = `${action.payload.error ? action.payload.error : ''}(${
+          action.payload.statusCode
+        }): ${action.payload.message}`;
+      })
+      .addCase(registerAccount.fulfilled, (state, action) => {
+        state.loading = false;
+        state.authenticated = true;
+        state.confirmed = action.payload.confirmed;
+        state.error = '';
+        state.access_token = action.payload.access_token;
+        state.refresh_token = action.payload.refresh_token;
       });
   },
 });
@@ -215,7 +245,7 @@ export const getAuthInfo = (state: RootState) => state.auth;
 
 export const {
   authLogout,
-  testDispatch,
+  authUpdateErrorMsg,
   authRefreshing,
   authUpdateTokens,
   authSessionExpired,

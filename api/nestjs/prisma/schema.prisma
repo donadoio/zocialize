@@ -16,11 +16,13 @@ model User {
   updatedAt DateTime @updatedAt
 
   username         String  @unique
+  email            String  @unique
   confirmed        Boolean @default(false)
   hash             String
-  defaultAvatar    String
-  customAvatar     String?
+  avatar           String  @default("default")
   refreshTokenHash String?
+
+  profileColor String @default("default")
 
   @@map("users")
 }

@@ -1,4 +1,4 @@
-import {configureStore, getDefaultMiddleware} from '@reduxjs/toolkit';
+import {configureStore} from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import screenReducer from './slices/screenSlice';
 import thunk from 'redux-thunk';
@@ -10,8 +10,7 @@ export const store = configureStore({
     auth: authReducer,
     screen: screenReducer,
   },
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware().prepend(jwtMiddleware),
+  middleware: [jwtMiddleware, thunk],
 });
 
 export type RootState = ReturnType<typeof store.getState>;

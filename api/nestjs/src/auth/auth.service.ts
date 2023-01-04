@@ -17,7 +17,7 @@ import { lastValueFrom, map } from 'rxjs';
 import { tokenPairDto } from '../../types/tokenPairDto';
 import { User } from '@prisma/client';
 import { LoginType } from 'types/LoginType';
-import { ConfirmEmailType } from 'types/ConfirmEmailType';
+import { ConfirmEmailType, RegisterAccountType } from 'types/';
 
 // Custom Class Validator Types
 
@@ -87,6 +87,23 @@ export class AuthService {
         throw new ForbiddenException('Username does not exist.');
       }
     } catch (e) {
+      throw e;
+    }
+  }
+
+  async register(data: RegisterAccountType) {
+    try {
+      let user: User = await this.prisma.user.create({
+        data: {
+          username: data.username,
+          email: data.email,
+          hash: await argon.hash(data.password),
+        },
+      });
+    } catch (e) {
+      if (e instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('woops', HttpStatus.BAD_REQUEST);
+      }
       throw e;
     }
   }

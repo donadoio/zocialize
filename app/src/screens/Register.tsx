@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   ImageBackground,
@@ -6,6 +6,8 @@ import {
   StatusBar,
   TouchableWithoutFeedback,
   Keyboard,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
 } from 'react-native';
 import {
   Block,
@@ -21,6 +23,15 @@ import Header from '../components/Header';
 import {useTranslation} from 'react-i18next';
 import {RootStackParamList} from './UnauthenticatedScreenNavigator';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import LinearGradient from 'react-native-linear-gradient';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  AuthStateType,
+  authUpdateErrorMsg,
+  getAuthInfo,
+  registerAccount,
+} from '../redux/slices/authSlice';
+import {AppDispatch} from '../redux/store';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -40,14 +51,47 @@ const DismissKeyboard: React.FC<any> = ({children}: any) => {
 
 const Register: React.FC<Props> = ({route, navigation}: Props) => {
   const {t} = useTranslation();
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [agreeTerms, setAgreeTerms] = useState<boolean>(false);
+  const authInfo: AuthStateType = useSelector(getAuthInfo);
+  const dispatch: AppDispatch = useDispatch();
+  const onPressRegister: () => void = () => {
+    console.log(`user: ${username}`);
+    console.log('email: ', email);
+    console.log('password: ', password);
+    console.log('confirm password: ', confirmPassword);
+    console.log('agreed to terms: ', agreeTerms);
+    if (
+      !username.length ||
+      !password.length ||
+      !email.length ||
+      !confirmPassword.length
+    )
+      return;
+    if (password !== confirmPassword) {
+      dispatch(authUpdateErrorMsg('Passwords do not match.'));
+      return;
+    }
+    if (agreeTerms === false) {
+      dispatch(
+        authUpdateErrorMsg('You must agree to the terms and conditions.'),
+      );
+      return;
+    }
+    dispatch(
+      registerAccount({username: username, email: email, password: password}),
+    );
+  };
   return (
     <DismissKeyboard>
       <>
         <Block flex middle>
-          <ImageBackground
-            source={Images.RegisterBackground}
-            style={styles.imageBackgroundContainer}
-            imageStyle={styles.imageBackground}>
+          <LinearGradient
+            colors={[appTheme.COLORS.WHITE, '#010101']}
+            style={styles.linearGradient}>
             <Block flex middle>
               <Block style={styles.registerContainer}>
                 <Block middle style={styles.registerTitle}>
@@ -65,10 +109,25 @@ const Register: React.FC<Props> = ({route, navigation}: Props) => {
                 <Block flex={1} middle>
                   <Block center flex={0.9}>
                     <Block center flex>
+                      <Text
+                        style={{
+                          fontFamily: 'montserrat-regular',
+                          marginVertical: 10,
+                          color: appTheme.COLORS.ERROR,
+                        }}
+                        muted>
+                        {authInfo.error}
+                      </Text>
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
                           placeholder={t('username')}
                           style={styles.inputs}
+                          value={username}
+                          onChange={(
+                            e: NativeSyntheticEvent<TextInputChangeEventData>,
+                          ) => {
+                            setUsername(e.nativeEvent.text);
+                          }}
                           iconContent={
                             <Icon
                               size={16}
@@ -85,6 +144,12 @@ const Register: React.FC<Props> = ({route, navigation}: Props) => {
                         <Input
                           placeholder={t('email')}
                           style={styles.inputs}
+                          value={email}
+                          onChange={(
+                            e: NativeSyntheticEvent<TextInputChangeEventData>,
+                          ) => {
+                            setEmail(e.nativeEvent.text);
+                          }}
                           iconContent={
                             <Icon
                               size={16}
@@ -102,6 +167,12 @@ const Register: React.FC<Props> = ({route, navigation}: Props) => {
                           placeholder={t('password')}
                           style={styles.inputs}
                           password={true}
+                          value={password}
+                          onChange={(
+                            e: NativeSyntheticEvent<TextInputChangeEventData>,
+                          ) => {
+                            setPassword(e.nativeEvent.text);
+                          }}
                           iconContent={
                             <Icon
                               size={16}
@@ -119,6 +190,12 @@ const Register: React.FC<Props> = ({route, navigation}: Props) => {
                           placeholder={t('confirm_password')}
                           style={styles.inputs}
                           password={true}
+                          value={confirmPassword}
+                          onChange={(
+                            e: NativeSyntheticEvent<TextInputChangeEventData>,
+                          ) => {
+                            setConfirmPassword(e.nativeEvent.text);
+                          }}
                           iconContent={
                             <Icon
                               size={16}
@@ -150,9 +227,17 @@ const Register: React.FC<Props> = ({route, navigation}: Props) => {
                             fontFamily: 'montserrat-regular',
                           }}
                           label={t('agree_terms')}
+                          initialValue={agreeTerms}
+                          onChange={() => {
+                            setAgreeTerms(!agreeTerms);
+                          }}
                         />
                       </Block>
-                      <Button color="primary" round style={styles.createButton}>
+                      <Button
+                        color="primary"
+                        round
+                        style={styles.registerButton}
+                        onPress={onPressRegister}>
                         <Text
                           style={{fontFamily: 'montserrat-bold'}}
                           size={14}
@@ -165,7 +250,7 @@ const Register: React.FC<Props> = ({route, navigation}: Props) => {
                 </Block>
               </Block>
             </Block>
-          </ImageBackground>
+          </LinearGradient>
         </Block>
       </>
     </DismissKeyboard>
@@ -205,24 +290,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(136, 152, 170, 0.3)',
     paddingVertical: 15,
   },
-  socialButtons: {
-    width: 120,
-    height: 40,
-    backgroundColor: '#fff',
-    shadowColor: appTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1,
-  },
-  socialTextButtons: {
-    color: appTheme.COLORS.PRIMARY,
-    fontWeight: '800',
-    fontSize: 14,
-  },
   inputIcons: {
     marginRight: 12,
     color: appTheme.COLORS.ICON_INPUT,
@@ -237,17 +304,19 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     paddingBottom: 15,
   },
-  createButton: {
+  registerButton: {
     width: width * 0.5,
     marginTop: 25,
     marginBottom: 40,
   },
-  social: {
-    width: theme.SIZES.BASE * 3.5,
-    height: theme.SIZES.BASE * 3.5,
-    borderRadius: theme.SIZES.BASE * 1.75,
-    justifyContent: 'center',
-    marginHorizontal: 10,
+  linearGradient: {
+    flex: 1,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width,
+    height: height,
+    padding: 0,
+    zIndex: 1,
   },
 });
 
