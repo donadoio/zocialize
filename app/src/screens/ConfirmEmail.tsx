@@ -21,13 +21,22 @@ import {
 import {Button, Icon, Input} from '../components';
 import {Images, appTheme} from '../constants';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {AppDispatch} from '../redux/store';
-import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../redux/store';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
-import {AuthStateType, getAuthInfo, getTokens} from '../redux/slices/authSlice';
+import {
+  authLogout,
+  AuthStateType,
+  confirmEmail,
+  ConfirmEmailFulfilled,
+  getAuthInfo,
+  getTokens,
+  ValidationError,
+} from '../redux/slices/authSlice';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {type RootStackParamList} from './UnauthenticatedScreenNavigator';
-import LinearGradient from 'react-native-linear-gradient';
+import {type RootStackParamList} from './UnconfirmedScreenNavigator';
+import {ThunkDispatch} from 'redux-thunk';
+import {Action} from 'redux';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -39,29 +48,38 @@ const DismissKeyboard: React.FC<any> = ({children}: any) => {
   );
 };
 
-type Props = NativeStackScreenProps<
+type StackScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  'Login',
-  'Unauthenticated'
+  'ConfirmEmail',
+  'Unconfirmed'
 >;
 
-const Login: React.FC<Props> = ({route, navigation}: Props) => {
+type Props = StackScreenProps & {
+  authInfo: AuthStateType;
+  onConfirmEmail: any;
+};
+
+const ConfirmEmail: React.FC<Props> = ({
+  route,
+  navigation,
+  authInfo,
+  onConfirmEmail,
+}: Props) => {
   const dispatch: AppDispatch = useDispatch();
   const {t} = useTranslation();
-  const authInfo: AuthStateType = useSelector(getAuthInfo);
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const onPressLogin = () => {
-    if (username.length === 0 || password.length === 0) return;
-    dispatch(getTokens({username: username, password: password}));
+  const [verificationCode, setVerificationCode] = useState<string>('');
+  const onPressConfirm = () => {
+    if (verificationCode.length === 0) return;
+    onConfirmEmail(verificationCode);
   };
   return (
     <DismissKeyboard>
       <>
         <Block flex middle>
-          <LinearGradient
-            colors={[appTheme.COLORS.PRIMARY, '#010101']}
-            style={styles.linearGradient}>
+          <ImageBackground
+            source={Images.RegisterBackground}
+            style={styles.imageBackgroundContainer}
+            imageStyle={styles.imageBackground}>
             <Block flex middle>
               <Block style={styles.registerContainer}>
                 <Block middle style={styles.registerTitle}>
@@ -72,7 +90,7 @@ const Login: React.FC<Props> = ({route, navigation}: Props) => {
                     }}
                     color="#333"
                     size={24}>
-                    {t('welcome')}
+                    {t('confirm_email_title')}
                   </Text>
                 </Block>
 
@@ -82,54 +100,32 @@ const Login: React.FC<Props> = ({route, navigation}: Props) => {
                       <Text
                         style={{
                           fontFamily: 'montserrat-regular',
-                          marginVertical: 10,
+                          marginBottom: 10,
+                          paddingHorizontal: 10,
+                        }}
+                        muted>
+                        {t('confirm_email_subtitle')}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: 'montserrat-regular',
+                          marginVertical: authInfo.error.length ? 10 : 0,
                           color: appTheme.COLORS.ERROR,
                         }}
                         muted>
                         {authInfo.error}
                       </Text>
-                      <Block width={width * 0.8} style={{marginBottom: 5}}>
-                        <Input
-                          placeholder={t('username')}
-                          style={styles.inputs}
-                          value={username}
-                          onChange={(
-                            e: NativeSyntheticEvent<TextInputChangeEventData>,
-                          ) => {
-                            setUsername(e.nativeEvent.text);
-                          }}
-                          iconContent={
-                            <Icon
-                              size={16}
-                              color="#ADB5BD"
-                              name="person"
-                              family="MaterialIcons"
-                              style={styles.inputIcons}
-                            />
-                          }
-                        />
-                      </Block>
 
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
-                          placeholder={t('password')}
+                          placeholder={t('verification_code')}
                           style={styles.inputs}
-                          password={true}
-                          value={password}
+                          value={verificationCode}
                           onChange={(
                             e: NativeSyntheticEvent<TextInputChangeEventData>,
                           ) => {
-                            setPassword(e.nativeEvent.text);
+                            setVerificationCode(e.nativeEvent.text);
                           }}
-                          iconContent={
-                            <Icon
-                              size={16}
-                              color="#ADB5BD"
-                              name="lock"
-                              family="MaterialIcons"
-                              style={styles.inputIcons}
-                            />
-                          }
                         />
                       </Block>
 
@@ -145,7 +141,7 @@ const Login: React.FC<Props> = ({route, navigation}: Props) => {
                                 marginVertical: 10,
                               }}
                               muted>
-                              {t('forgot_password')}
+                              {t('send_again')}
                             </Text>
                           </View>
                         </TouchableOpacity>
@@ -153,12 +149,12 @@ const Login: React.FC<Props> = ({route, navigation}: Props) => {
                           color="primary"
                           round
                           style={styles.formButton}
-                          onPress={onPressLogin}>
+                          onPress={onPressConfirm}>
                           <Text
                             style={{fontFamily: 'montserrat-bold'}}
                             size={14}
                             color={appTheme.COLORS.WHITE}>
-                            {t('login')}
+                            {t('confirm')}
                           </Text>
                         </Button>
                         <Button
@@ -166,13 +162,13 @@ const Login: React.FC<Props> = ({route, navigation}: Props) => {
                           round
                           style={styles.formButton}
                           onPress={() => {
-                            navigation.navigate('Register');
+                            dispatch(authLogout);
                           }}>
                           <Text
                             style={{fontFamily: 'montserrat-bold'}}
                             size={14}
                             color={appTheme.COLORS.WHITE}>
-                            {t('signup')}
+                            {t('logout')}
                           </Text>
                         </Button>
                       </Block>
@@ -181,7 +177,7 @@ const Login: React.FC<Props> = ({route, navigation}: Props) => {
                 </Block>
               </Block>
             </Block>
-          </LinearGradient>
+          </ImageBackground>
         </Block>
       </>
     </DismissKeyboard>
@@ -219,9 +215,26 @@ const styles = StyleSheet.create({
     backgroundColor: appTheme.COLORS.WHITE,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(136, 152, 170, 0.3)',
-    paddingVertical: 15,
+    paddingTop: 15,
   },
-
+  socialButtons: {
+    width: 120,
+    height: 40,
+    backgroundColor: '#fff',
+    shadowColor: appTheme.COLORS.BLACK,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowRadius: 8,
+    shadowOpacity: 0.1,
+    elevation: 1,
+  },
+  socialTextButtons: {
+    color: appTheme.COLORS.PRIMARY,
+    fontWeight: '800',
+    fontSize: 14,
+  },
   inputIcons: {
     marginRight: 12,
     color: appTheme.COLORS.ICON_INPUT,
@@ -241,16 +254,33 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
   },
-
-  linearGradient: {
-    flex: 1,
-    paddingLeft: 15,
-    paddingRight: 15,
-    width,
-    height: height,
-    padding: 0,
-    zIndex: 1,
+  social: {
+    width: theme.SIZES.BASE * 3.5,
+    height: theme.SIZES.BASE * 3.5,
+    borderRadius: theme.SIZES.BASE * 1.75,
+    justifyContent: 'center',
+    marginHorizontal: 10,
   },
 });
 
-export default Login;
+const mapStateToProps = (state: RootState) => {
+  return {
+    authInfo: state.auth,
+  };
+};
+
+const mapDispatchToProps = (
+  dispatch: ThunkDispatch<
+    RootState,
+    ConfirmEmailFulfilled | ValidationError,
+    Action
+  >,
+) => {
+  return {
+    onConfirmEmail: (arg: string) => dispatch(confirmEmail(arg)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ConfirmEmail);
+
+//export default ConfirmEmail;

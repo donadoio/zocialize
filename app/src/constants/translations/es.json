@@ -1,5 +1,14 @@
 {
-    "app_title": "Zocialize",
-    "app_subtitle": "App social de la verdad. Comunica lo que importa.",
-    "get_started": "COMIENZA"
+    "app_title": "Zocialize Ahora",
+    "app_subtitle": "Comunica lo que importa.",
+    "get_started": "Comienza",
+    "username": "Usuario",
+    "email": "Email",
+    "password": "Contraseña",
+    "confirm_password": "Confirma contraseña",
+    "forgot_password": "Olvidaste la contraseña?",
+    "agree_terms": "Estoy de acuerdo con los terminos y condiciones.",
+    "login": "Iniciar Sesion",
+    "signup": "Registrarme",
+    "register": "Registrate"
 }

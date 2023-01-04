@@ -16,6 +16,7 @@ import {Block, GalioProvider} from 'galio-framework';
 import {appTheme} from './src/constants';
 import jwt_decode from 'jwt-decode';
 import {REACT_APP_BACKEND_URL} from '@env';
+import UnconfirmedScreenNavigator from './src/screens/UnconfirmedScreenNavigator';
 
 const AppScreens = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -53,10 +54,10 @@ const AppScreens = () => {
       <GalioProvider theme={appTheme}>
         <Block flex>
           {!authInfo.authenticated ? (
-            // User isn't signed in
             <UnauthenticatedScreenNavigator />
+          ) : !authInfo.confirmed ? (
+            <UnconfirmedScreenNavigator />
           ) : (
-            // User is signed in
             <AuthenticatedScreenNavigator />
           )}
         </Block>

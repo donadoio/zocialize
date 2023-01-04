@@ -67,7 +67,7 @@ export class UserService {
             customAvatar: null,
           },
         });
-        console.log(`Successfully removed avatar for ${user.nickname}`);
+        console.log(`Successfully removed avatar for ${user.username}`);
         return { avatar: user.defaultAvatar };
       }
     } catch (error) {
@@ -90,7 +90,7 @@ export class UserService {
       });
       if (user) {
         return {
-          nickname: user.nickname,
+          nickname: user.username,
           id: user.id,
         };
       } else {

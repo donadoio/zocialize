@@ -18,10 +18,19 @@ import {
 import {Button, Icon, Input} from '../components/';
 import {Images, appTheme} from '../constants/';
 import Header from '../components/Header';
+import {useTranslation} from 'react-i18next';
+import {RootStackParamList} from './UnauthenticatedScreenNavigator';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 const {width, height} = Dimensions.get('screen');
 
-const DismissKeyboard = ({children}) => {
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'Register',
+  'Unauthenticated'
+>;
+
+const DismissKeyboard: React.FC<any> = ({children}: any) => {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       {children}
@@ -29,7 +38,8 @@ const DismissKeyboard = ({children}) => {
   );
 };
 
-const Register: React.FC = props => {
+const Register: React.FC<Props> = ({route, navigation}: Props) => {
+  const {t} = useTranslation();
   return (
     <DismissKeyboard>
       <>
@@ -48,7 +58,7 @@ const Register: React.FC = props => {
                     }}
                     color="#333"
                     size={24}>
-                    Get Started
+                    {t('get_started')}
                   </Text>
                 </Block>
 
@@ -57,7 +67,7 @@ const Register: React.FC = props => {
                     <Block center flex>
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
-                          placeholder="Username"
+                          placeholder={t('username')}
                           style={styles.inputs}
                           iconContent={
                             <Icon
@@ -73,7 +83,7 @@ const Register: React.FC = props => {
 
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
-                          placeholder="Email"
+                          placeholder={t('email')}
                           style={styles.inputs}
                           iconContent={
                             <Icon
@@ -89,7 +99,24 @@ const Register: React.FC = props => {
 
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
-                          placeholder="Password"
+                          placeholder={t('password')}
+                          style={styles.inputs}
+                          password={true}
+                          iconContent={
+                            <Icon
+                              size={16}
+                              color="#ADB5BD"
+                              name="lock"
+                              family="MaterialIcons"
+                              style={styles.inputIcons}
+                            />
+                          }
+                        />
+                      </Block>
+
+                      <Block width={width * 0.8} style={{marginBottom: 5}}>
+                        <Input
+                          placeholder={t('confirm_password')}
                           style={styles.inputs}
                           password={true}
                           iconContent={
@@ -122,7 +149,7 @@ const Register: React.FC = props => {
                             color: appTheme.COLORS.HEADER,
                             fontFamily: 'montserrat-regular',
                           }}
-                          label="I agree to the terms and conditions."
+                          label={t('agree_terms')}
                         />
                       </Block>
                       <Button color="primary" round style={styles.createButton}>
@@ -130,7 +157,7 @@ const Register: React.FC = props => {
                           style={{fontFamily: 'montserrat-bold'}}
                           size={14}
                           color={appTheme.COLORS.WHITE}>
-                          Register
+                          {t('register')}
                         </Text>
                       </Button>
                     </Block>

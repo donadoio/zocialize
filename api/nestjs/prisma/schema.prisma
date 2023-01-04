@@ -15,25 +15,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  nickname         String  @unique
+  username         String  @unique
+  confirmed        Boolean @default(false)
   hash             String
   defaultAvatar    String
   customAvatar     String?
   refreshTokenHash String?
 
   @@map("users")
-}
-
-model Client {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  nickname         String  @unique
-  hash             String
-  defaultAvatar    String
-  customAvatar     String?
-  refreshTokenHash String?
-
-  @@map("clients")
 }

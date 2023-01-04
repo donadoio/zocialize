@@ -1,5 +1,21 @@
 {
-    "app_title": "Zocialize",
-    "app_subtitle": "True social app. Communicate what matters.",
-    "get_started": "GET STARTED"
+    "app_title": "Zocialize Now",
+    "app_subtitle": "Communicate what matters.",
+    "get_started": "Get Started",
+    "welcome": "Welcome",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "forgot_password": "Forgot password?",
+    "agree_terms": "I agree to the terms and conditions.",
+    "login": "Log in",
+    "signup": "Sign up",
+    "register": "Register",
+    "confirm_email_title": "Email Confirmation",
+    "confirm_email_subtitle": "You received an email with a confirmation code, use it in order to verify and activate your account.",
+    "verification_code": "Verification code",
+    "confirm": "Confirm",
+    "send_again": "Send code again.",
+    "logout": "Log out"
 }

@@ -4,8 +4,7 @@ import {appTheme} from '../constants/';
 import Onboarding from './Onboarding';
 import Login from './Login';
 import Register from './Register';
-
-const Stack = createNativeStackNavigator();
+import {useTranslation} from 'react-i18next';
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -13,13 +12,18 @@ export type RootStackParamList = {
   Register: undefined;
 };
 
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
 const UnauthenticatedScreenNavigator: React.FC = () => {
+  const {t} = useTranslation();
   return (
     <Stack.Navigator
-      initialRouteName="Onboarding"
+      id="Unauthenticated"
+      initialRouteName="Login"
       screenOptions={{
         headerTransparent: true,
         headerTintColor: '#F1F1F1',
+        orientation: 'portrait',
       }}>
       <Stack.Screen
         name="Onboarding"
@@ -41,7 +45,7 @@ const UnauthenticatedScreenNavigator: React.FC = () => {
         name="Register"
         component={Register}
         options={{
-          title: 'Sign up',
+          title: t('signup'),
           headerTintColor: appTheme.COLORS.HEADER,
         }}
       />

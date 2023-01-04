@@ -1,11 +1,9 @@
 import React from 'react';
-import { Icon } from 'galio-framework';
+import {Icon} from 'galio-framework';
 
-const IconExtra = (props) => {
-  const { name, family, ...rest } = props;
-  return <Icon name={name} family="MaterialIcons" {...rest} />;
-}
-
-
+const IconExtra = (props: any) => {
+  const {name, family, ...rest} = props;
+  return <Icon name={name} family={family} {...rest} />;
+};
 
 export default IconExtra;
