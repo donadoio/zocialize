@@ -30,36 +30,6 @@ export class AuthService {
     private axios: HttpService,
   ) {}
 
-  async makeAdmin(data: any) {
-    try {
-      const nick: string = data.user;
-      const pass: string = data.pass;
-      await this.prisma.user.create({
-        data: {
-          username: nick,
-          hash: await argon.hash(pass),
-          defaultAvatar: 'defaultAvatar',
-        },
-      });
-      const user: User = await this.prisma.user.findUnique({
-        where: {
-          username: nick,
-        },
-      });
-      if (user) {
-        const tokens: tokenPairDto = await this.signTokens(
-          user.id,
-          user.username,
-          true,
-        );
-        await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
-        return tokens;
-      }
-    } catch (e) {
-      throw e;
-    }
-  }
-
   async login(data: LoginType) {
     try {
       const user: User = await this.prisma.user.findUnique({
@@ -100,9 +70,23 @@ export class AuthService {
           hash: await argon.hash(data.password),
         },
       });
+      const tokens: tokenPairDto = await this.signTokens(
+        user.id,
+        user.username,
+        user.confirmed,
+      );
+      await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+      return { ...tokens, confirmed: user.confirmed };
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError) {
-        throw new HttpException('woops', HttpStatus.BAD_REQUEST);
+        if (e.code === 'P2002') {
+          throw new HttpException(
+            `Woops, it appears someone has already used that ${e.meta.target[0]}.`,
+            HttpStatus.BAD_REQUEST,
+          );
+        } else {
+          throw new HttpException('woops', HttpStatus.BAD_REQUEST);
+        }
       }
       throw e;
     }
@@ -254,7 +238,7 @@ export class AuthService {
 
       const refreshToken = await this.jwt.signAsync(payload, {
         /*expiresIn: 60 * 60 * 24 * 7 * 4,*/
-        expiresIn: '1m',
+        expiresIn: '10m',
         secret: refreshTokenSecret,
       });
 

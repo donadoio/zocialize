@@ -1,6 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import {appTheme} from '../constants/';
+import {appTheme} from '../constants';
 import Onboarding from './Onboarding';
 import Login from './Login';
 import Register from './Register';
@@ -14,7 +14,7 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const UnauthenticatedScreenNavigator: React.FC = () => {
+const NavigatorUnauthenticatedScreen: React.FC = () => {
   const {t} = useTranslation();
   return (
     <Stack.Navigator
@@ -53,4 +53,4 @@ const UnauthenticatedScreenNavigator: React.FC = () => {
   );
 };
 
-export default UnauthenticatedScreenNavigator;
+export default NavigatorUnauthenticatedScreen;

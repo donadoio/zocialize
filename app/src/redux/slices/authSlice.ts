@@ -167,6 +167,7 @@ export const authSlice = createSlice({
       state.access_token = null;
       state.refresh_token = null;
       state.refreshTokenPromise = null;
+      console.log('Logged out');
     },
     authSessionExpired: (state: AuthStateType) => {
       state.loading = false;

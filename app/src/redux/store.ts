@@ -1,6 +1,6 @@
 import {configureStore} from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
-import screenReducer from './slices/screenSlice';
+import profileReducer from './slices/profileSlice';
 import thunk from 'redux-thunk';
 import jwtMiddleware from './jwtMiddleware';
 import {useDispatch} from 'react-redux';
@@ -8,7 +8,7 @@ import {useDispatch} from 'react-redux';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    screen: screenReducer,
+    profile: profileReducer,
   },
   middleware: [jwtMiddleware, thunk],
 });

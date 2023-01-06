@@ -1,126 +1,301 @@
-import React from 'react';
-import { StyleSheet, Switch, FlatList, Platform, TouchableOpacity, View } from "react-native";
-import { Block, Text, theme, Icon } from "galio-framework";
+import React, {useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  Image,
+  ImageBackground,
+  Platform,
+  View,
+  PermissionsAndroid,
+  Alert,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+} from 'react-native';
+import {Block, Text, theme, Button as GaButton, NavBar} from 'galio-framework';
 
-import materialTheme from '../constants/Theme';
+import {Button, Icon} from '../components';
+import {Images, appTheme} from '../constants';
+import {HeaderHeight} from '../constants/utils';
+import LinearGradient from 'react-native-linear-gradient';
+import Post from '../components/Post';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
-export default class Settings extends React.Component {
-  state = {};
+import ColorPicker from 'react-native-wheel-color-picker';
+import {
+  getBasicProfile,
+  GetBasicProfileFulfilled,
+  getBasicProfileInfo,
+  ProfileStateType,
+} from '../redux/slices/profileSlice';
+import {connect, useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../redux/store';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from './NavigatorSettingsScreen';
+import {ThunkDispatch, Action} from '@reduxjs/toolkit';
+import {ValidationError} from '../redux/slices/authSlice';
 
-  toggleSwitch = switchNumber => this.setState({ [switchNumber]: !this.state[switchNumber] });
+const {width, height} = Dimensions.get('screen');
 
-  renderItem = ({ item }) => {
-    const {navigate} = this.props.navigation;
+const thumbMeasure = (width - 48 - 32) / 3;
+const iPhoneX = () =>
+  Platform.OS === 'ios' &&
+  (height === 812 || width === 812 || height === 896 || width === 896);
 
-    switch(item.type) {
-      case 'switch': 
-        return (
-          <Block row middle space="between" style={styles.rows}>
-            <Text size={14}>{item.title}</Text>
-            <Switch
-              onValueChange={() => this.toggleSwitch(item.id)}
-              ios_backgroundColor={materialTheme.COLORS.SWITCH_OFF}
-              thumbColor={Platform.OS === 'android' ? materialTheme.COLORS.SWITCH_OFF : null}
-              trackColor={{ false: materialTheme.COLORS.SWITCH_OFF, true: materialTheme.COLORS.SWITCH_ON }}
-              value={this.state[item.id]}
-            />
-          </Block>
-        );
-      case 'button': 
-        return (
-          <Block style={styles.rows}>
-            <TouchableOpacity onPress={() => navigate('Pro')}>
-              <Block row middle space="between" style={{paddingTop:7}}>
-                <Text size={14}>{item.title}</Text>
-                <Icon name="angle-right" family="font-awesome" style={{ paddingRight: 5 }} />
-              </Block>
+type StackScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  'Settings',
+  'Settings'
+>;
+
+type Props = StackScreenProps & {
+  profileInfo: ProfileStateType;
+  onGetBasicProfile: any;
+};
+
+const Settings: React.FC<Props> = ({
+  navigation,
+  profileInfo,
+  onGetBasicProfile,
+}: Props) => {
+  useEffect(() => {
+    onGetBasicProfile('Settings');
+  }, []);
+  useEffect(() => {
+    console.log(profileInfo);
+  }, [profileInfo]);
+  return (
+    <>
+      <Block>
+        <NavBar
+          back={false}
+          title={'Settings'}
+          style={styles.navbar}
+          transparent={false}
+          left={
+            <TouchableOpacity
+              onPress={() => {
+                navigation.toggleDrawer();
+              }}>
+              <Icon
+                name={'menu'}
+                family="MaterialIcons"
+                size={28}
+                color={appTheme.COLORS.ICON}
+              />
             </TouchableOpacity>
-          </Block>);
-      default:
-        break;
-    }
-  }
-
-  render() {
-    const recommended = [
-      { title: "Use FaceID to sign in", id: "face", type: "switch" },
-      { title: "Auto-Lock security", id: "autolock", type: "switch" },
-      { title: "Notifications", id: "Notifications", type: "button" },
-    ];
-
-    const payment = [
-      { title: "Manage Payment Options", id: "Payment", type: "button" },
-      { title: "Manage Gift Cards", id: "gift", type: "button" },
-    ];
-    
-    const privacy = [
-      { title: "User Agreement", id: "Agreement", type: "button" },
-      { title: "Privacy", id: "Privacy", type: "button" },
-      { title: "About", id: "About", type: "button" },
-    ];
-
-    return (
-      <View
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.settings}>
-        <FlatList
-          data={recommended}
-          keyExtractor={(item, index) => item.id}
-          renderItem={this.renderItem}
-          ListHeaderComponent={
-            <Block style={styles.title}>
-              <Text bold center size={theme.SIZES.BASE} style={{ paddingBottom: 5 }}>
-                Recommended Settings
-              </Text>
-              <Text center muted size={12}>
-                These are the most important settings
-              </Text>
-            </Block>
           }
+          leftStyle={{paddingVertical: 12, flex: 0.2}}
+          titleStyle={styles.navTitle}
         />
-        <Block style={styles.title}>
-          <Text bold center size={theme.SIZES.BASE} style={{ paddingBottom: 5 }}>
-          Payment Settings
-          </Text>
-          <Text center muted size={12}>
-          These are also important settings
-          </Text>
-        </Block>
-        <FlatList
-          data={payment}
-          keyExtractor={(item, index) => item.id}
-          renderItem={this.renderItem}
-        />
-        <Block style={styles.title}>
-          <Text bold center size={theme.SIZES.BASE} style={{ paddingBottom: 5 }}>
-          Privacy Settings
-          </Text>
-          <Text center muted size={12}>
-          Third most important settings
-          </Text>
-        </Block>
-        <FlatList
-          data={privacy}
-          keyExtractor={(item, index) => item.id}
-          renderItem={this.renderItem}
-        />
-      </View>
-      
-    );
-  }
-}
+      </Block>
+      <Block
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Block flex={0.4}>
+            <LinearGradient
+              colors={[
+                profileInfo.profileColor === 'default'
+                  ? appTheme.COLORS.WHITE
+                  : profileInfo.profileColor,
+                '#010101',
+              ]}
+              style={styles.linearGradient}>
+              <Block flex>
+                <Block
+                  style={{
+                    position: 'absolute',
+                    width: width,
+                    zIndex: 5,
+                    paddingHorizontal: 20,
+                  }}>
+                  {/*
+                      AVATAR
+              */}
+                  <Block middle style={{top: height * 0.08}}>
+                    <Image
+                      source={
+                        profileInfo.avatar === 'default'
+                          ? Images.DefaultAvatar
+                          : Images.DefaultAvatar
+                      }
+                      style={styles.avatar}
+                    />
+                  </Block>
+                  {/*
+                          USERNAME
+                */}
+                  <Block style={{top: height * 0.1}}>
+                    <Block middle>
+                      <Text
+                        style={{
+                          fontFamily: 'montserrat-bold',
+                          marginBottom: theme.SIZES.BASE / 2,
+                          fontWeight: '900',
+                          fontSize: 26,
+                        }}
+                        color="#ffffff">
+                        {profileInfo.username}
+                      </Text>
+                    </Block>
+                  </Block>
+                </Block>
+              </Block>
+            </LinearGradient>
+          </Block>
+          <Block />
+          {/*
+              REST...
+        */}
+          <Block flex>
+            <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
+              <Block style={styles.rows}>
+                <SettingListItem
+                  navigation={navigation}
+                  text={'Change Avatar'}
+                  icon={'chevron-right'}
+                  destination={'ChangeAvatar'}
+                />
+                <SettingListItem
+                  navigation={navigation}
+                  text={'Change Profile Color'}
+                  icon={'chevron-right'}
+                  destination={'ChangeProfileColor'}
+                />
+                <SettingListItem
+                  navigation={navigation}
+                  text={'Change Langauge'}
+                  icon={'chevron-right'}
+                  destination={'ChangeProfileColor'}
+                />
+                <SettingListItem
+                  navigation={navigation}
+                  text={'Change Password'}
+                  icon={'chevron-right'}
+                  destination={'ChangePassword'}
+                />
+              </Block>
+            </Block>
+          </Block>
+        </ScrollView>
+      </Block>
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
-  settings: {
-    paddingVertical: theme.SIZES.BASE / 3,
+  avatar: {
+    width: thumbMeasure,
+    height: thumbMeasure,
+    borderRadius: 50,
+    borderWidth: 0,
   },
-  title: {
-    paddingTop: theme.SIZES.BASE,
-    paddingBottom: theme.SIZES.BASE / 2,
+  linearGradient: {
+    flex: 1,
+    paddingLeft: 15,
+    paddingRight: 15,
+    width,
+    height: height * 0.3,
+    padding: 0,
+    zIndex: 1,
   },
-  rows: {
-    height: theme.SIZES.BASE * 2,
-    paddingHorizontal: theme.SIZES.BASE,
-    marginBottom: theme.SIZES.BASE / 2,
-  }
+  textStyle: {
+    padding: 10,
+    color: 'black',
+    textAlign: 'center',
+  },
+  imageStyle: {
+    width: 200,
+    height: 200,
+    margin: 5,
+  },
+  postOptions: {
+    marginBottom: 24,
+    marginTop: 10,
+    elevation: 4,
+    top: height * 0.1,
+  },
+  tab: {
+    backgroundColor: theme.COLORS.TRANSPARENT,
+    width: width * 0.35,
+    borderRadius: 0,
+    borderWidth: 0,
+    height: 24,
+    elevation: 0,
+  },
+  tabTitle: {
+    lineHeight: 19,
+    fontWeight: '400',
+    color: appTheme.COLORS.HEADER,
+  },
+  submitButton: {
+    width: width - theme.SIZES.BASE * 4,
+    height: theme.SIZES.BASE * 3,
+    shadowRadius: 0,
+    shadowOpacity: 0,
+  },
+  group: {
+    paddingTop: theme.SIZES.BASE * 2,
+  },
+  navbar: {
+    paddingVertical: 0,
+    paddingBottom: theme.SIZES.BASE * 1.5,
+    paddingTop: iPhoneX() ? theme.SIZES.BASE * 4 : theme.SIZES.BASE,
+    zIndex: 5,
+  },
+  navTitle: {
+    width: '100%',
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily: 'montserrat-regular',
+    paddingHorizontal: 20,
+  },
 });
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    profileInfo: state.profile,
+  };
+};
+
+const mapDispatchToProps = (
+  dispatch: ThunkDispatch<
+    RootState,
+    GetBasicProfileFulfilled | ValidationError,
+    Action
+  >,
+) => {
+  return {
+    onGetBasicProfile: (arg: string) => dispatch(getBasicProfile(arg)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Settings);
+
+const SettingListItem = ({navigation, text, icon, destination}) => {
+  return (
+    <TouchableOpacity
+      style={{paddingVertical: 15}}
+      onPress={() => navigation.navigate(destination)}>
+      <Block row middle space="between" style={{paddingTop: 7}}>
+        <Text
+          style={{fontFamily: 'montserrat-regular'}}
+          size={16}
+          color={appTheme.COLORS.TEXT}>
+          {text}
+        </Text>
+        <Icon
+          name={icon}
+          family="MaterialIcons"
+          style={{paddingRight: 15}}
+          size={16}
+        />
+      </Block>
+    </TouchableOpacity>
+  );
+};

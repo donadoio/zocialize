@@ -8,7 +8,7 @@ import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import * as argon from 'argon2';
 import { AuthService } from 'src/auth/auth.service';
-import {ConfigService} from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable()
@@ -23,22 +23,21 @@ export class UserService {
     try {
       let user: User = await this.prisma.user.findUnique({ where: { id: id } });
       if (user) {
-          user = await this.prisma.user.update({
-            where: {
-              id: id,
-            },
-            data: {
-              customAvatar: `${process.env.BACKEND_URL}/srcs/users/${file.filename}`,
-            },
-          });
+        user = await this.prisma.user.update({
+          where: {
+            id: id,
+          },
+          data: {
+            avatar: `${process.env.BACKEND_URL}/srcs/users/${file.filename}`,
+          },
+        });
         return {
-          avatar: user.customAvatar ? user.customAvatar : user.defaultAvatar,
+          avatar: user.avatar === 'default' ? 'default' : user.avatar,
         };
       }
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError)
-      {
-          throw new HttpException("woops", HttpStatus.BAD_REQUEST);
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('woops', HttpStatus.BAD_REQUEST);
       }
       //console.log('Error trying to change avatar:');
       //console.log(error);
@@ -56,24 +55,16 @@ export class UserService {
       if (!user) {
         throw new ForbiddenException('user not found');
       } else {
-        await this.prisma.user.updateMany({
-          where: {
-            id: id,
-            customAvatar: {
-              not: null,
-            },
-          },
-          data: {
-            customAvatar: null,
-          },
+        await this.prisma.user.update({
+          where: { id: id },
+          data: { avatar: 'default' },
         });
         console.log(`Successfully removed avatar for ${user.username}`);
-        return { avatar: user.defaultAvatar };
+        return { avatar: user.avatar };
       }
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError)
-      {
-          throw new HttpException("woops", HttpStatus.BAD_REQUEST);
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('woops', HttpStatus.BAD_REQUEST);
       }
       //console.log('Error trying to remove avatar:');
       //console.log(error);
@@ -86,7 +77,7 @@ export class UserService {
       const user: User = await this.prisma.user.findUnique({
         where: {
           id: id,
-        }
+        },
       });
       if (user) {
         return {
@@ -94,15 +85,13 @@ export class UserService {
           id: user.id,
         };
       } else {
-        throw new HttpException("woops", HttpStatus.BAD_REQUEST);
+        throw new HttpException('woops', HttpStatus.BAD_REQUEST);
       }
-    } catch(error) {
-      if (error instanceof PrismaClientKnownRequestError)
-      {
-          throw new HttpException("woops", HttpStatus.BAD_REQUEST);
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('woops', HttpStatus.BAD_REQUEST);
       }
       throw error;
     }
   }
-
 }

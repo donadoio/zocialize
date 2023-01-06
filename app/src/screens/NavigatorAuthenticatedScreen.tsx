@@ -15,10 +15,11 @@ import {appTheme, Images} from '../constants';
 import Profile from './Profile';
 import {Block, Text} from 'galio-framework';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import NavigatorSettingsScreen from './NavigatorSettingsScreen';
 const {width} = Dimensions.get('screen');
 const Drawer = createDrawerNavigator();
 
-const AuthenticatedScreenNavigator: React.FC = () => {
+const NavigatorAuthenticatedScreen: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const DrawerContent = (props: any) => {
     return (
@@ -112,6 +113,21 @@ const AuthenticatedScreenNavigator: React.FC = () => {
           ),
         }}
       />
+      <Drawer.Screen
+        name="NavigatorSettingsScreen"
+        component={NavigatorSettingsScreen}
+        options={{
+          title: 'Settings',
+          headerShown: false,
+          drawerIcon: ({focused, size}) => (
+            <Icon
+              name="settings"
+              size={size}
+              color={focused ? appTheme.COLORS.PRIMARY : appTheme.COLORS.WHITE}
+            />
+          ),
+        }}
+      />
     </Drawer.Navigator>
   );
 };
@@ -131,4 +147,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AuthenticatedScreenNavigator;
+export default NavigatorAuthenticatedScreen;

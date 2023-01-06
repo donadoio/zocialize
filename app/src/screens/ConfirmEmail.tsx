@@ -34,7 +34,7 @@ import {
   ValidationError,
 } from '../redux/slices/authSlice';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {type RootStackParamList} from './UnconfirmedScreenNavigator';
+import {type RootStackParamList} from './NavigatorUnconfirmedScreen';
 import {ThunkDispatch} from 'redux-thunk';
 import {Action} from 'redux';
 
@@ -162,7 +162,7 @@ const ConfirmEmail: React.FC<Props> = ({
                           round
                           style={styles.formButton}
                           onPress={() => {
-                            dispatch(authLogout);
+                            dispatch(authLogout());
                           }}>
                           <Text
                             style={{fontFamily: 'montserrat-bold'}}

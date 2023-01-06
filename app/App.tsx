@@ -7,8 +7,8 @@ import {
   authUpdateTokens,
   getAuthInfo,
 } from './src/redux/slices/authSlice';
-import AuthenticatedScreenNavigator from './src/screens/AuthenticatedScreenNavigator';
-import UnauthenticatedScreenNavigator from './src/screens/UnauthenticatedScreenNavigator';
+import NavigatorAuthenticatedScreen from './src/screens/NavigatorAuthenticatedScreen';
+import NavigatorUnauthenticatedScreen from './src/screens/NavigatorUnauthenticatedScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -16,7 +16,7 @@ import {Block, GalioProvider} from 'galio-framework';
 import {appTheme} from './src/constants';
 import jwt_decode from 'jwt-decode';
 import {REACT_APP_BACKEND_URL} from '@env';
-import UnconfirmedScreenNavigator from './src/screens/UnconfirmedScreenNavigator';
+import NavigatorUnconfirmedScreen from './src/screens/NavigatorUnconfirmedScreen';
 
 const AppScreens = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -54,11 +54,11 @@ const AppScreens = () => {
       <GalioProvider theme={appTheme}>
         <Block flex>
           {!authInfo.authenticated ? (
-            <UnauthenticatedScreenNavigator />
+            <NavigatorUnauthenticatedScreen />
           ) : !authInfo.confirmed ? (
-            <UnconfirmedScreenNavigator />
+            <NavigatorUnconfirmedScreen />
           ) : (
-            <AuthenticatedScreenNavigator />
+            <NavigatorAuthenticatedScreen />
           )}
         </Block>
       </GalioProvider>

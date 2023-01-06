@@ -26,6 +26,7 @@ import { ReqRefreshTokens } from '../../types/ReqRefreshTokens';
 import { AllExceptionsFilter } from './all-exception.filter';
 import { LoginType } from 'types/LoginType';
 import { ConfirmEmailType } from 'types/ConfirmEmailType';
+import { RegisterAccountType } from '../../types';
 
 @UseFilters(new AllExceptionsFilter())
 @Controller('auth')
@@ -39,13 +40,9 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
-  async register(@Body() data: RegisterDto) {}
-
-  @Post('makeadmin')
-  @HttpCode(HttpStatus.OK)
-  async makeAdmin(@Body() data: any) {
+  async register(@Body() data: RegisterAccountType) {
     try {
-      const result = await this.authService.makeAdmin(data);
+      const result = await this.authService.register(data);
       return result;
     } catch (e) {
       throw e;

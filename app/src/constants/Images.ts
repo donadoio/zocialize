@@ -1,10 +1,10 @@
 // local imgs
 const Logo = require('../assets/imgs/app-logo.png');
 const AppLogo = require('../assets/imgs/app-logo.png');
-const ProfilePicture = require('../assets/imgs/profile-img.jpg');
+const DefaultAvatar = require('../assets/imgs/default-avatar.jpg');
 
 export default {
   Logo,
-  ProfilePicture,
+  DefaultAvatar,
   AppLogo: AppLogo,
 };

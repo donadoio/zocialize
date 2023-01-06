@@ -26,7 +26,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 import {AuthStateType, getAuthInfo, getTokens} from '../redux/slices/authSlice';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {type RootStackParamList} from './UnauthenticatedScreenNavigator';
+import {type RootStackParamList} from './NavigatorUnauthenticatedScreen';
 import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('screen');

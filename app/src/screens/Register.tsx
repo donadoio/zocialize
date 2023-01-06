@@ -21,7 +21,7 @@ import {Button, Icon, Input} from '../components/';
 import {Images, appTheme} from '../constants/';
 import Header from '../components/Header';
 import {useTranslation} from 'react-i18next';
-import {RootStackParamList} from './UnauthenticatedScreenNavigator';
+import {RootStackParamList} from './NavigatorUnauthenticatedScreen';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
 import {useDispatch, useSelector} from 'react-redux';

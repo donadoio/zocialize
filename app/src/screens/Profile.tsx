@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   StyleSheet,
   Dimensions,
@@ -15,12 +15,34 @@ import {Images, appTheme} from '../constants';
 import {HeaderHeight} from '../constants/utils';
 import LinearGradient from 'react-native-linear-gradient';
 import Post from '../components/Post';
+import {ThunkDispatch, Action} from '@reduxjs/toolkit';
+import {connect} from 'react-redux';
+import {ValidationError} from '../redux/slices/authSlice';
+import {
+  GetBasicProfileFulfilled,
+  getBasicProfile,
+  ProfileStateType,
+} from '../redux/slices/profileSlice';
+import {RootState} from '../redux/store';
 
 const {width, height} = Dimensions.get('screen');
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
-const Profile = () => {
+type Props = {
+  navigation: any;
+  profileInfo: ProfileStateType;
+  onGetBasicProfile: any;
+};
+
+const Profile: React.FC<Props> = ({
+  navigation,
+  profileInfo,
+  onGetBasicProfile,
+}: Props) => {
+  useEffect(() => {
+    onGetBasicProfile('Profile');
+  }, []);
   return (
     <Block
       style={{
@@ -31,7 +53,12 @@ const Profile = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <Block flex={0.4}>
           <LinearGradient
-            colors={['#4c669f', '#010101']}
+            colors={[
+              profileInfo.profileColor === 'default'
+                ? appTheme.COLORS.WHITE
+                : profileInfo.profileColor,
+              '#010101',
+            ]}
             style={styles.linearGradient}>
             <Block flex>
               <Block
@@ -42,7 +69,7 @@ const Profile = () => {
                   paddingHorizontal: 20,
                 }}>
                 <Block middle style={{top: height * 0.08}}>
-                  <Image source={Images.ProfilePicture} style={styles.avatar} />
+                  <Image source={Images.DefaultAvatar} style={styles.avatar} />
                 </Block>
                 <Block style={{top: height * 0.1}}>
                   <Block middle>
@@ -54,7 +81,7 @@ const Profile = () => {
                         fontSize: 26,
                       }}
                       color="#ffffff">
-                      Ryan Scheinder
+                      {profileInfo.username}
                     </Text>
                   </Block>
                 </Block>
@@ -258,4 +285,22 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+const mapStateToProps = (state: RootState) => {
+  return {
+    profileInfo: state.profile,
+  };
+};
+
+const mapDispatchToProps = (
+  dispatch: ThunkDispatch<
+    RootState,
+    GetBasicProfileFulfilled | ValidationError,
+    Action
+  >,
+) => {
+  return {
+    onGetBasicProfile: (arg: string) => dispatch(getBasicProfile(arg)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

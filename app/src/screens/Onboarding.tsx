@@ -14,7 +14,7 @@ import {Images, appTheme} from '../constants/';
 import {HeaderHeight} from '../constants/utils';
 import {useTranslation} from 'react-i18next';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from './UnauthenticatedScreenNavigator';
+import {RootStackParamList} from './NavigatorUnauthenticatedScreen';
 import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<
