@@ -115,6 +115,14 @@ const ConfirmEmail: React.FC<Props> = ({
                         muted>
                         {authInfo.error}
                       </Text>
+                      <Text
+                        style={{
+                          fontFamily: 'montserrat-regular',
+                          marginVertical: authInfo.error.length ? 10 : 0,
+                        }}
+                        muted>
+                        {`In development mode just submit "0000"`}
+                      </Text>
 
                       <Block width={width * 0.8} style={{marginBottom: 5}}>
                         <Input
