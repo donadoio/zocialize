@@ -18,6 +18,7 @@ import { tokenPairDto } from '../../types/tokenPairDto';
 import { User } from '@prisma/client';
 import { LoginType } from 'types/LoginType';
 import { ConfirmEmailType, RegisterAccountType } from 'types/';
+import { ChangePasswordType } from '../../types/ChangePasswordType';
 
 // Custom Class Validator Types
 
@@ -34,7 +35,7 @@ export class AuthService {
     try {
       const user: User = await this.prisma.user.findUnique({
         where: {
-          username: data.username,
+          usernameLowercase: data.username.toLowerCase(),
         },
       });
       if (user) {
@@ -66,6 +67,7 @@ export class AuthService {
       let user: User = await this.prisma.user.create({
         data: {
           username: data.username,
+          usernameLowercase: data.username.toLowerCase(),
           email: data.email,
           hash: await argon.hash(data.password),
         },
@@ -81,7 +83,11 @@ export class AuthService {
       if (e instanceof PrismaClientKnownRequestError) {
         if (e.code === 'P2002') {
           throw new HttpException(
-            `Woops, it appears someone has already used that ${e.meta.target[0]}.`,
+            `Woops, it appears someone has already used that ${
+              e.meta.target[0] === 'usernameLowercase'
+                ? 'username'
+                : e.meta.target[0]
+            }.`,
             HttpStatus.BAD_REQUEST,
           );
         } else {
@@ -143,6 +149,41 @@ export class AuthService {
           return { ...tokens };
         } else {
           throw new UnauthorizedException('Verification code is invalid');
+        }
+      } else {
+        throw new ForbiddenException('User does not exist.');
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async changePassword(id: number, data: ChangePasswordType) {
+    try {
+      if (data.oldPassword === data.newPassword) {
+        throw new HttpException(
+          'New password must be different.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const user: User = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      if (user) {
+        let passwordOk: boolean = await argon.verify(
+          `${user.hash}`,
+          data.oldPassword,
+        );
+        if (passwordOk) {
+          await this.prisma.user.update({
+            where: { id: id },
+            data: { hash: await argon.hash(data.newPassword) },
+          });
+          return;
+        } else {
+          throw new UnauthorizedException('Password is invalid');
         }
       } else {
         throw new ForbiddenException('User does not exist.');

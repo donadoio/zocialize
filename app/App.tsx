@@ -1,6 +1,6 @@
 import {Provider, useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, store} from './src/redux/store';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   authSessionExpired,
   AuthStateType,
@@ -17,10 +17,21 @@ import {appTheme} from './src/constants';
 import jwt_decode from 'jwt-decode';
 import {REACT_APP_BACKEND_URL} from '@env';
 import NavigatorUnconfirmedScreen from './src/screens/NavigatorUnconfirmedScreen';
+import {io} from 'socket.io-client';
+import {
+  getSocketInfo,
+  initSocket,
+  SocketStateType,
+} from './src/redux/slices/socketSlice';
 
 const AppScreens = () => {
   const dispatch: AppDispatch = useDispatch();
   const authInfo: AuthStateType = useSelector(getAuthInfo);
+  const socketInfo: SocketStateType = useSelector(getSocketInfo);
+  const [socket, setSocket] = useState<any>(null);
+  const [socketId, setSocketId] = useState<any>('');
+
+  // Check tokens on each screen change
   const onScreenChange: () => void = async () => {
     if (authInfo.authenticated) {
       const user: any = jwt_decode(`${authInfo.access_token}`);
@@ -48,6 +59,25 @@ const AppScreens = () => {
       }
     }
   };
+
+  // Socket connection hook
+  useEffect(() => {
+    if (
+      authInfo.authenticated &&
+      authInfo.confirmed &&
+      authInfo.refresh_token?.length
+    ) {
+      console.log('Try to establish socket connection');
+      dispatch(initSocket(authInfo.refresh_token));
+    }
+  }, [authInfo.confirmed]);
+
+  useEffect(() => {
+    console.log(socket);
+    if (socketInfo.socket?.connected === false) {
+      socketInfo.socket?.connect();
+    }
+  }, [socketInfo.socket]);
 
   return (
     <NavigationContainer onStateChange={onScreenChange}>

@@ -44,7 +44,7 @@ const thumbMeasure = (width - 48 - 32) / 3;
 
 type StackScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  'ChangeAvatar',
+  'ChangePassword',
   'Settings'
 >;
 
@@ -62,6 +62,11 @@ const ChangePassword: React.FC<Props> = ({
     onGetBasicProfile('Settings');
   }, []);
   const t = useTranslation();
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [repeatNewPassword, setRepeatNewPassword] = useState('');
+
+  const onPressSubmit = () => {};
 
   return (
     <Block
@@ -117,13 +122,13 @@ const ChangePassword: React.FC<Props> = ({
         <Block middle center style={{paddingVertical: 15}}>
           <Block width={width * 0.8} style={{marginBottom: 5}}>
             <Input
-              placeholder={' hello '}
+              placeholder={'Passwprd'}
               style={styles.inputs}
               password={true}
-              value={''}
-              onChange={(
-                e: NativeSyntheticEvent<TextInputChangeEventData>,
-              ) => {}}
+              value={oldPassword}
+              onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+                setOldPassword(e.nativeEvent.text);
+              }}
               iconContent={
                 <Icon
                   size={16}
@@ -137,13 +142,13 @@ const ChangePassword: React.FC<Props> = ({
           </Block>
           <Block width={width * 0.8} style={{marginBottom: 5}}>
             <Input
-              placeholder={' hello '}
+              placeholder={'New password'}
               style={styles.inputs}
               password={true}
-              value={''}
-              onChange={(
-                e: NativeSyntheticEvent<TextInputChangeEventData>,
-              ) => {}}
+              value={newPassword}
+              onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+                setNewPassword(e.nativeEvent.text);
+              }}
               iconContent={
                 <Icon
                   size={16}
@@ -157,13 +162,13 @@ const ChangePassword: React.FC<Props> = ({
           </Block>
           <Block width={width * 0.8} style={{marginBottom: 5}}>
             <Input
-              placeholder={' hello '}
+              placeholder={'Repeat new password'}
               style={styles.inputs}
               password={true}
-              value={''}
-              onChange={(
-                e: NativeSyntheticEvent<TextInputChangeEventData>,
-              ) => {}}
+              value={repeatNewPassword}
+              onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+                setRepeatNewPassword(e.nativeEvent.text);
+              }}
               iconContent={
                 <Icon
                   size={16}
@@ -175,7 +180,10 @@ const ChangePassword: React.FC<Props> = ({
               }
             />
           </Block>
-          <Button color="secondary" style={styles.submitButton} onPress={{}}>
+          <Button
+            color="secondary"
+            style={styles.submitButton}
+            onPress={onPressSubmit}>
             <Text
               style={{fontFamily: 'montserrat-bold'}}
               size={14}

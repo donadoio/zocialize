@@ -45,51 +45,15 @@ const iPhoneX = () =>
 
 type StackScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  'Settings',
+  'ChangeLanguage',
   'Settings'
 >;
 
-type Props = StackScreenProps & {
-  profileInfo: ProfileStateType;
-  onGetBasicProfile: any;
-};
+type Props = StackScreenProps;
 
-const Settings: React.FC<Props> = ({
-  navigation,
-  profileInfo,
-  onGetBasicProfile,
-}: Props) => {
-  useEffect(() => {
-    onGetBasicProfile('Settings');
-  }, []);
-  useEffect(() => {
-    console.log(profileInfo);
-  }, [profileInfo]);
+const Settings: React.FC<Props> = ({navigation}: Props) => {
   return (
     <>
-      <Block>
-        <NavBar
-          back={false}
-          title={'Settings'}
-          style={styles.navbar}
-          transparent={false}
-          left={
-            <TouchableOpacity
-              onPress={() => {
-                navigation.toggleDrawer();
-              }}>
-              <Icon
-                name={'menu'}
-                family="MaterialIcons"
-                size={28}
-                color={appTheme.COLORS.ICON}
-              />
-            </TouchableOpacity>
-          }
-          leftStyle={{paddingVertical: 12, flex: 0.2}}
-          titleStyle={styles.navTitle}
-        />
-      </Block>
       <Block
         style={{
           flex: 1,
@@ -97,61 +61,6 @@ const Settings: React.FC<Props> = ({
           justifyContent: 'space-between',
         }}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Block flex={0.4}>
-            <LinearGradient
-              colors={[
-                profileInfo.profileColor === 'default'
-                  ? appTheme.COLORS.WHITE
-                  : profileInfo.profileColor,
-                '#010101',
-              ]}
-              style={styles.linearGradient}>
-              <Block flex>
-                <Block
-                  style={{
-                    position: 'absolute',
-                    width: width,
-                    zIndex: 5,
-                    paddingHorizontal: 20,
-                  }}>
-                  {/*
-                      AVATAR
-              */}
-                  <Block middle style={{top: height * 0.08}}>
-                    <Image
-                      source={
-                        profileInfo.avatar === 'default'
-                          ? Images.DefaultAvatar
-                          : Images.DefaultAvatar
-                      }
-                      style={styles.avatar}
-                    />
-                  </Block>
-                  {/*
-                          USERNAME
-                */}
-                  <Block style={{top: height * 0.1}}>
-                    <Block middle>
-                      <Text
-                        style={{
-                          fontFamily: 'montserrat-bold',
-                          marginBottom: theme.SIZES.BASE / 2,
-                          fontWeight: '900',
-                          fontSize: 26,
-                        }}
-                        color="#ffffff">
-                        {profileInfo.username}
-                      </Text>
-                    </Block>
-                  </Block>
-                </Block>
-              </Block>
-            </LinearGradient>
-          </Block>
-          <Block />
-          {/*
-              REST...
-        */}
           <Block flex>
             <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
               <Block style={styles.rows}>
@@ -169,9 +78,9 @@ const Settings: React.FC<Props> = ({
                 />
                 <SettingListItem
                   navigation={navigation}
-                  text={'Change Language'}
+                  text={'Change Langauge'}
                   icon={'chevron-right'}
-                  destination={'ChangeLanguage'}
+                  destination={'ChangeProfileColor'}
                 />
                 <SettingListItem
                   navigation={navigation}
@@ -257,25 +166,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    profileInfo: state.profile,
-  };
-};
-
-const mapDispatchToProps = (
-  dispatch: ThunkDispatch<
-    RootState,
-    GetBasicProfileFulfilled | ValidationError,
-    Action
-  >,
-) => {
-  return {
-    onGetBasicProfile: (arg: string) => dispatch(getBasicProfile(arg)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Settings);
+export default Settings;
 
 const SettingListItem = ({navigation, text, icon, destination}) => {
   return (

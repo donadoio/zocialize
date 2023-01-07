@@ -94,4 +94,41 @@ export class UserService {
       throw error;
     }
   }
+
+  async getBasicProfile(id: number) {
+    try {
+      const user: User = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      if (user) {
+        return {
+          id: user.id,
+          username: user.username,
+          avatar: user.avatar,
+          profileColor: user.profileColor,
+        };
+      } else {
+        throw new HttpException('woops', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('woops', HttpStatus.BAD_REQUEST);
+      }
+      throw error;
+    }
+  }
+
+  async changeProfileColor(id: number, color: string) {
+    try {
+      await this.prisma.user.update({
+        where: { id: id },
+        data: { profileColor: color },
+      });
+      return { color: color };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

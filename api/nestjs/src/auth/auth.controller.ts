@@ -25,8 +25,11 @@ import { ReqExtractId } from '../../types/ReqExtractId';
 import { ReqRefreshTokens } from '../../types/ReqRefreshTokens';
 import { AllExceptionsFilter } from './all-exception.filter';
 import { LoginType } from 'types/LoginType';
-import { ConfirmEmailType } from 'types/ConfirmEmailType';
-import { RegisterAccountType } from '../../types';
+import {
+  RegisterAccountType,
+  ChangePasswordType,
+  ConfirmEmailType,
+} from '../../types';
 
 @UseFilters(new AllExceptionsFilter())
 @Controller('auth')
@@ -85,6 +88,24 @@ export class AuthController {
     console.log('POST /auth/confirmemail');
     try {
       const result = await this.authService.confirmEmail(req.user.sub, data);
+      console.log(result);
+      return result;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('changepassword')
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Req() req: ReqExtractId,
+    @Body() data: ChangePasswordType,
+  ) {
+    console.log('POST /auth/confirmemail');
+    try {
+      const result = await this.authService.changePassword(req.user.sub, data);
       console.log(result);
       return result;
     } catch (e) {

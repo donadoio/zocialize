@@ -19,8 +19,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ReqExtractId } from '../../types/ReqExtractId';
 import { UserService } from './user.service';
-import { SetNickDto } from '../../types/SetNickDto.dto';
-import {AllExceptionsFilter} from '../auth/all-exception.filter';
+import { AllExceptionsFilter } from '../auth/all-exception.filter';
+import { ChangeProfileColorType } from '../../types';
 
 @UseFilters(new AllExceptionsFilter())
 @Controller('user')
@@ -61,6 +61,7 @@ export class UserController {
     try {
       console.log('Trying to log file');
       console.log(file);
+      return;
       const result = await this.UserService.changeAvatar(req.user.sub, file);
       return result;
     } catch (error) {
@@ -85,7 +86,7 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @Get('getprofile')
   async getprofile(@Req() req: ReqExtractId) {
-    console.log('POST / user/getprofile');
+    console.log('GET / user/getprofile');
     try {
       const result = await this.UserService.getProfile(req.user.sub);
       return result;
@@ -94,4 +95,36 @@ export class UserController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('getbasicprofile')
+  async getBasicProfile(@Req() req: ReqExtractId) {
+    console.log('GET / user/getbasicprofile');
+    try {
+      const result = await this.UserService.getBasicProfile(req.user.sub);
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('changeprofilecolor')
+  @HttpCode(HttpStatus.OK)
+  async changeProfileColor(
+    @Req() req: ReqExtractId,
+    @Body() data: ChangeProfileColorType,
+  ) {
+    console.log('POST / user/changeprofilecolor');
+    try {
+      const result = await this.UserService.changeProfileColor(
+        req.user.sub,
+        data.color,
+      );
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }

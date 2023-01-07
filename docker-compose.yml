@@ -9,6 +9,7 @@ services:
       - zocialize-db
     ports:
       - 3000:3000
+      - 3050:3050
       - 5555:5555
     environment:
       - DATABASE_URL

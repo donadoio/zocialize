@@ -9,12 +9,14 @@ import Settings from './Settings';
 import ChangeAvatar from './ChangeAvatar';
 import ChangeProfileColor from './ChangeProfileColor';
 import ChangePassword from './ChangePassword';
+import ChangeLanguage from './ChangeLanguage';
 
 export type RootStackParamList = {
   Settings: undefined;
   ChangeAvatar: undefined;
   ChangeProfileColor: undefined;
   ChangePassword: undefined;
+  ChangeLanguage: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -55,6 +57,13 @@ const NavigatorSettingsScreen: React.FC = () => {
         component={ChangePassword}
         options={{
           title: 'Change Password',
+        }}
+      />
+      <Stack.Screen
+        name="ChangeLanguage"
+        component={ChangeLanguage}
+        options={{
+          title: 'Change Language',
         }}
       />
     </Stack.Navigator>

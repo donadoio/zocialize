@@ -59,6 +59,20 @@ const ChangeAvatar: React.FC<Props> = ({
     onGetBasicProfile('Settings');
   }, []);
 
+  const [pickerResponse, setPickerResponse] = useState(null);
+
+  const openGallery = () => {
+    const options = {
+      selectionLimit: 1,
+      mediaType: 'photo',
+      includeBase64: false,
+    };
+    launchImageLibrary(options, setPickerResponse);
+    console.log(pickerResponse);
+  };
+
+  const uri = pickerResponse?.assets && pickerResponse.assets[0].uri;
+
   return (
     <Block
       style={{
@@ -93,7 +107,7 @@ const ChangeAvatar: React.FC<Props> = ({
                 {/*
                           Change avatar/color options
                 */}
-                <Block row center middle style={styles.postOptions}>
+                <Block row center middle style={styles.avatarOptions}>
                   <TouchableOpacity onPress={() => {}}>
                     <Button shadowless style={[styles.tab]}>
                       <Block row middle>
@@ -149,26 +163,47 @@ const ChangeAvatar: React.FC<Props> = ({
         </Block>
         <Block />
 
-        <Block flex style={styles.group}>
-          <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
-            <Block style={styles.rows}>
-              <TouchableOpacity onPress={() => navigation.navigate('Pro')}>
-                <Block row middle space="between" style={{paddingTop: 7}}>
-                  <Text
-                    style={{fontFamily: 'montserrat-regular'}}
-                    size={14}
-                    color={appTheme.COLORS.TEXT}>
-                    Manage Options
-                  </Text>
-                  <Icon
-                    name="chevron-right"
-                    family="MaterialIcons"
-                    style={{paddingRight: 5}}
-                  />
-                </Block>
-              </TouchableOpacity>
-            </Block>
-          </Block>
+        <Block center middle>
+          <Button
+            color="secondary"
+            style={styles.submitButton}
+            onPress={openGallery}>
+            <Text
+              style={{fontFamily: 'montserrat-bold'}}
+              size={14}
+              color={appTheme.COLORS.WHITE}>
+              {'Choose Image'}
+            </Text>
+          </Button>
+          {uri && (
+            <View style={{backgroundColor: 'black'}}>
+              <Image
+                source={{uri}}
+                style={{height: 400, width: 400, margin: 20}}></Image>
+            </View>
+          )}
+          {!uri && (
+            <View
+              style={{
+                borderColor: 'black',
+                borderWidth: 1,
+                height: 400,
+                width: 400,
+                margin: 20,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+              }}>
+              <View style={{position: 'absolute', top: 180, left: 180}}>
+                <Text
+                  style={{
+                    color: appTheme.COLORS.WHITE,
+                    fontWeight: '500',
+                    fontSize: 20,
+                  }}>
+                  Image
+                </Text>
+              </View>
+            </View>
+          )}
         </Block>
       </ScrollView>
     </Block>
@@ -191,7 +226,7 @@ const styles = StyleSheet.create({
     padding: 0,
     zIndex: 1,
   },
-  postOptions: {
+  avatarOptions: {
     marginBottom: 24,
     marginTop: 10,
     elevation: 4,
@@ -210,8 +245,11 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: appTheme.COLORS.HEADER,
   },
-  group: {
-    paddingTop: theme.SIZES.BASE * 2,
+  submitButton: {
+    width: width - theme.SIZES.BASE * 4,
+    height: theme.SIZES.BASE * 3,
+    shadowRadius: 0,
+    shadowOpacity: 0,
   },
 });
 const mapStateToProps = (state: RootState) => {
