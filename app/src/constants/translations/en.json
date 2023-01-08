@@ -17,5 +17,21 @@
     "verification_code": "Verification code",
     "confirm": "Confirm",
     "send_again": "Send code again.",
-    "logout": "Log out"
+    "logout": "Log out",
+    "language": {
+        "english": "English",
+        "spanish": "Spanish",
+    },
+    "screen_titles": {
+        "sign_up": "Sign Up",
+        "home": "Home",
+        "profile": "Profile",
+        "friends": "Friends",
+        "settings": "Settings",
+        "change_avatar": "Change Avatar",
+        "change_profile_color": "Change Profile Color",
+        "change_password": "Change Password",
+        "change_language": "Change Language",
+        "log_out": "Log out"
+    }
 }

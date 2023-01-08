@@ -42,28 +42,28 @@ const NavigatorSettingsScreen: React.FC = () => {
         name="ChangeAvatar"
         component={ChangeAvatar}
         options={{
-          title: 'Change Your Avatar',
+          title: `${t('screen_titles.change_avatar')}`,
         }}
       />
       <Stack.Screen
         name="ChangeProfileColor"
         component={ChangeProfileColor}
         options={{
-          title: 'Change Profile Color',
+          title: `${t('screen_titles.change_profile_color')}`,
         }}
       />
       <Stack.Screen
         name="ChangePassword"
         component={ChangePassword}
         options={{
-          title: 'Change Password',
+          title: `${t('screen_titles.change_password')}`,
         }}
       />
       <Stack.Screen
         name="ChangeLanguage"
         component={ChangeLanguage}
         options={{
-          title: 'Change Language',
+          title: `${t('screen_titles.change_language')}`,
         }}
       />
     </Stack.Navigator>

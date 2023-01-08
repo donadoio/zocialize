@@ -35,6 +35,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './NavigatorSettingsScreen';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
 import {ValidationError} from '../redux/slices/authSlice';
+import {useTranslation} from 'react-i18next';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -65,12 +66,13 @@ const Settings: React.FC<Props> = ({
   useEffect(() => {
     console.log(profileInfo);
   }, [profileInfo]);
+  const {t} = useTranslation();
   return (
     <>
       <Block>
         <NavBar
           back={false}
-          title={'Settings'}
+          title={`${t('screen_titles.change_password')}`}
           style={styles.navbar}
           transparent={false}
           left={
@@ -157,25 +159,25 @@ const Settings: React.FC<Props> = ({
               <Block style={styles.rows}>
                 <SettingListItem
                   navigation={navigation}
-                  text={'Change Avatar'}
+                  text={`${t('screen_titles.change_avatar')}`}
                   icon={'chevron-right'}
                   destination={'ChangeAvatar'}
                 />
                 <SettingListItem
                   navigation={navigation}
-                  text={'Change Profile Color'}
+                  text={`${t('screen_titles.change_profile_color')}`}
                   icon={'chevron-right'}
                   destination={'ChangeProfileColor'}
                 />
                 <SettingListItem
                   navigation={navigation}
-                  text={'Change Language'}
+                  text={`${t('screen_titles.change_language')}`}
                   icon={'chevron-right'}
                   destination={'ChangeLanguage'}
                 />
                 <SettingListItem
                   navigation={navigation}
-                  text={'Change Password'}
+                  text={`${t('screen_titles.change_password')}`}
                   icon={'chevron-right'}
                   destination={'ChangePassword'}
                 />

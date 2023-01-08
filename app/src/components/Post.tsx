@@ -48,7 +48,7 @@ const Post: React.FC<Props> = ({
       <TouchableOpacity>
         <Block row={true} flex style={styles.authorBlock}>
           <Block middle>
-            <Image source={Images.ProfilePicture} style={styles.avatar} />
+            <Image source={Images.DefaultAvatar} style={styles.avatar} />
           </Block>
           <Block middle>
             <Text

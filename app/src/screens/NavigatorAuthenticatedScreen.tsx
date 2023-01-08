@@ -17,11 +17,14 @@ import {Block, Text} from 'galio-framework';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import NavigatorSettingsScreen from './NavigatorSettingsScreen';
 import {disconnectSocket} from '../redux/slices/socketSlice';
+import {useTranslation} from 'react-i18next';
+import Friends from './Friends';
 const {width} = Dimensions.get('screen');
 const Drawer = createDrawerNavigator();
 
 const NavigatorAuthenticatedScreen: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  const {t} = useTranslation();
   const DrawerContent = (props: any) => {
     return (
       <DrawerContentScrollView {...props}>
@@ -45,7 +48,7 @@ const NavigatorAuthenticatedScreen: React.FC = () => {
         <DrawerItemList {...props} />
         <DrawerItem
           inactiveTintColor={appTheme.COLORS.WHITE}
-          label="Logout"
+          label={`${t('screen_titles.log_out')}`}
           onPress={() => {
             dispatch(authLogout());
             dispatch(disconnectSocket());
@@ -77,7 +80,7 @@ const NavigatorAuthenticatedScreen: React.FC = () => {
         name="Home"
         component={Home}
         options={{
-          title: 'Home',
+          title: `${t('screen_titles.home')}`,
           drawerIcon: ({focused, size}) => (
             <Icon
               name="home"
@@ -91,7 +94,7 @@ const NavigatorAuthenticatedScreen: React.FC = () => {
         name="Profile"
         component={Profile}
         options={{
-          title: 'Profile',
+          title: `${t('screen_titles.profile')}`,
           drawerIcon: ({focused, size}) => (
             <Icon
               name="home"
@@ -103,9 +106,9 @@ const NavigatorAuthenticatedScreen: React.FC = () => {
       />
       <Drawer.Screen
         name="Friends"
-        component={Profile}
+        component={Friends}
         options={{
-          title: 'Friends',
+          title: `${t('screen_titles.friends')}`,
           drawerIcon: ({focused, size}) => (
             <Icon
               name="people"
@@ -119,7 +122,7 @@ const NavigatorAuthenticatedScreen: React.FC = () => {
         name="NavigatorSettingsScreen"
         component={NavigatorSettingsScreen}
         options={{
-          title: 'Settings',
+          title: `${t('screen_titles.settings')}`,
           headerShown: false,
           drawerIcon: ({focused, size}) => (
             <Icon

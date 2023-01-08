@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
 export default Settings;
 
 const LanguageListItem = ({navigation, text}) => {
-  const {i18n} = useTranslation();
+  const {t, i18n} = useTranslation();
   return (
     <TouchableOpacity
       style={{paddingVertical: 15}}
@@ -164,8 +164,8 @@ const LanguageListItem = ({navigation, text}) => {
           style={{fontFamily: 'montserrat-regular'}}
           size={16}
           color={appTheme.COLORS.TEXT}>
-          {text === 'en' && 'English'}
-          {text === 'es' && 'Spanish'}
+          {text === 'en' && t('language.english')}
+          {text === 'es' && t('language.spanish')}
         </Text>
       </Block>
     </TouchableOpacity>

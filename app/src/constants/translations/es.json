@@ -10,5 +10,22 @@
     "agree_terms": "Estoy de acuerdo con los terminos y condiciones.",
     "login": "Iniciar Sesion",
     "signup": "Registrarme",
-    "register": "Registrate"
+    "register": "Registrate",
+    "language": {
+        "english": "Ingles",
+        "spanish": "Espanol",
+        "change_language": "Cambiar Idioma"
+    },
+    "screen_titles": {
+        "sign_up": "Registrate",
+        "home": "Inicio",
+        "profile": "Perfil",
+        "friends": "Amigos",
+        "settings": "Ajustes",
+        "change_avatar": "Cambiar Avatar",
+        "change_profile_color": "Cambiar Color de Perfil",
+        "change_password": "Cambiar Contrasena",
+        "change_language": "Cambiar Idioma",
+        "log_out": "Cerrar sesion"
+    }
 }
