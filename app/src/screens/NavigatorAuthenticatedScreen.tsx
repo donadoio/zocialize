@@ -16,6 +16,7 @@ import Profile from './Profile';
 import {Block, Text} from 'galio-framework';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import NavigatorSettingsScreen from './NavigatorSettingsScreen';
+import {disconnectSocket} from '../redux/slices/socketSlice';
 const {width} = Dimensions.get('screen');
 const Drawer = createDrawerNavigator();
 
@@ -47,6 +48,7 @@ const NavigatorAuthenticatedScreen: React.FC = () => {
           label="Logout"
           onPress={() => {
             dispatch(authLogout());
+            dispatch(disconnectSocket());
           }}
           icon={DrawerLogoutIcon}
         />

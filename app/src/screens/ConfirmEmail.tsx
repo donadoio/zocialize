@@ -37,6 +37,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {type RootStackParamList} from './NavigatorUnconfirmedScreen';
 import {ThunkDispatch} from 'redux-thunk';
 import {Action} from 'redux';
+import {disconnectSocket} from '../redux/slices/socketSlice';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -171,6 +172,7 @@ const ConfirmEmail: React.FC<Props> = ({
                           style={styles.formButton}
                           onPress={() => {
                             dispatch(authLogout());
+                            dispatch(disconnectSocket());
                           }}>
                           <Text
                             style={{fontFamily: 'montserrat-bold'}}

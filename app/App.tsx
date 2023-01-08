@@ -2,6 +2,7 @@ import {Provider, useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, store} from './src/redux/store';
 import React, {useEffect, useState} from 'react';
 import {
+  authLogout,
   authSessionExpired,
   AuthStateType,
   authUpdateTokens,
@@ -19,6 +20,7 @@ import {REACT_APP_BACKEND_URL} from '@env';
 import NavigatorUnconfirmedScreen from './src/screens/NavigatorUnconfirmedScreen';
 import {io} from 'socket.io-client';
 import {
+  disconnectSocket,
   getSocketInfo,
   initSocket,
   SocketStateType,
@@ -47,14 +49,15 @@ const AppScreens = () => {
               },
             },
           );
-          console.log(t);
-          console.log(t.data);
+          //console.log(t);
+          //console.log(t.data);
           t.data
             ? dispatch(authUpdateTokens(t.data))
             : dispatch(authSessionExpired());
         } catch (e) {
-          console.log('Unable to refresh tokens.');
+          //console.log('Unable to refresh tokens.');
           dispatch(authSessionExpired());
+          dispatch(disconnectSocket());
         }
       }
     }
@@ -67,15 +70,20 @@ const AppScreens = () => {
       authInfo.confirmed &&
       authInfo.refresh_token?.length
     ) {
-      console.log('Try to establish socket connection');
+      //console.log('Try to establish socket connection');
       dispatch(initSocket(authInfo.refresh_token));
     }
   }, [authInfo.confirmed]);
 
   useEffect(() => {
-    console.log(socket);
+    //console.log(socket);
     if (socketInfo.socket?.connected === false) {
+      //console.log('Before connect: ', socketInfo.socket);
       socketInfo.socket?.connect();
+      //console.log('After connect: ', socketInfo.socket);
+      socketInfo.socket.on('disconnect', () => {
+        dispatch(authLogout());
+      });
     }
   }, [socketInfo.socket]);
 

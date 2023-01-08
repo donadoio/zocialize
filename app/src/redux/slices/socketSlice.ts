@@ -25,23 +25,21 @@ export const socketSlice = createSlice({
       console.log('initSocket payload: ', action.payload);
       console.log('backend socket: ', REACT_APP_SOCKET_URL);
       const socketOptions: any = {
-        transportOptions: {
-          polling: {
-            extraHeaders: {
-              Authorization: `Bearer ${action.payload}`,
-            },
-          },
+        auth: {
+          token: action.payload,
         },
-        autoConnect: true,
       };
-      state.socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
-      state.socket.connect();
-      console.log('After connect: ', state.socket);
+      state.socket = io(`${process.env.REACT_APP_SOCKET_URL}`, socketOptions);
+    },
+    disconnectSocket: state => {
+      try {
+        state.socket.disconnect();
+      } catch (e) {}
     },
   },
 });
 
 export const getSocketInfo = (state: RootState) => state.socket;
 
-export const {initSocket} = socketSlice.actions;
+export const {initSocket, disconnectSocket} = socketSlice.actions;
 export default socketSlice.reducer;
