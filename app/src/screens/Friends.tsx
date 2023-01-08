@@ -12,6 +12,8 @@ import {
   TouchableOpacity,
   Modal,
   Pressable,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
 } from 'react-native';
 import {
   Block,
@@ -24,25 +26,20 @@ import {
 
 import {Button, Icon} from '../components';
 import {Images, appTheme} from '../constants';
-import {HeaderHeight} from '../constants/utils';
-import LinearGradient from 'react-native-linear-gradient';
-import Post from '../components/Post';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-
-import ColorPicker from 'react-native-wheel-color-picker';
-import {
-  getBasicProfile,
-  GetBasicProfileFulfilled,
-  getBasicProfileInfo,
-  ProfileStateType,
-} from '../redux/slices/profileSlice';
 import {connect, useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../redux/store';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from './NavigatorSettingsScreen';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
 import {ValidationError} from '../redux/slices/authSlice';
 import {useTranslation} from 'react-i18next';
+import {
+  clearSearchUsersResults,
+  FriendsStateType,
+  getUserSearchResults,
+  searchUsers,
+  SearchUsersFulfilled,
+  UserSearchInfo,
+} from '../redux/slices/friendsSlice';
+import {useIsFocused} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -53,15 +50,30 @@ const iPhoneX = () =>
 
 const Friends: React.FC<Props> = ({
   navigation,
-  profileInfo,
-  onGetBasicProfile,
+  onSearchUsers,
+  friendsState,
 }: Props) => {
+  const dispatch: AppDispatch = useDispatch();
+  const isFocused: boolean = useIsFocused();
+  const [searchNewFriendsQuery, setSearchNewFriendsQuery] =
+    useState<string>('');
   useEffect(() => {
-    onGetBasicProfile('Settings');
-  }, []);
+    if (searchNewFriendsQuery.length > 3) {
+      onSearchUsers(searchNewFriendsQuery);
+    } else if (
+      !searchNewFriendsQuery.length &&
+      friendsState.userSearchResults.length
+    ) {
+      dispatch(clearSearchUsersResults());
+    }
+  }, [searchNewFriendsQuery]);
+  // Check if screen is focused and there's something in results in order to clear it.
   useEffect(() => {
-    console.log(profileInfo);
-  }, [profileInfo]);
+    if (isFocused === false && friendsState.userSearchResults.length)
+      dispatch(clearSearchUsersResults());
+    if (isFocused === false && searchNewFriendsQuery.length)
+      setSearchNewFriendsQuery('');
+  }, [isFocused]);
   const {t} = useTranslation();
   return (
     <>
@@ -92,37 +104,70 @@ const Friends: React.FC<Props> = ({
                 />
               </TouchableOpacity>
             }
+            value={searchNewFriendsQuery}
+            onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+              setSearchNewFriendsQuery(e.nativeEvent.text);
+            }}
           />
-          <Text size={16} style={styles.title}>
-            {`Friend Requests`}
-          </Text>
-          <Block flex>
-            <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
-              <Block style={styles.rows}>
-                <FriendRequestListItem
-                  navigation={navigation}
-                  name={'Friend'}
-                />
-                <FriendRequestListItem
-                  navigation={navigation}
-                  name={'Julian'}
-                />
-                <FriendRequestListItem navigation={navigation} name={'Steph'} />
+          {friendsState.userSearchResults.length ? (
+            <>
+              <Text size={16} style={styles.title}>
+                {`Results`}
+              </Text>
+              <Block flex>
+                <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
+                  <Block style={styles.rows}>
+                    {friendsState.userSearchResults.map(element => {
+                      return (
+                        <NewFriendSearchListItem
+                          username={element.username}
+                          isFriend={false}
+                          avatar={element.avatar}
+                        />
+                      );
+                    })}
+                  </Block>
+                </Block>
               </Block>
-            </Block>
-          </Block>
-          <Text size={16} style={styles.title}>
-            {`${t('screen_titles.friends')}`}
-          </Text>
-          <Block flex>
-            <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
-              <Block style={styles.rows}>
-                <FriendListItem navigation={navigation} name={'Friend'} />
-                <FriendListItem navigation={navigation} name={'Julian'} />
-                <FriendListItem navigation={navigation} name={'Steph'} />
+            </>
+          ) : null}
+          {friendsState && !friendsState.userSearchResults.length && (
+            <>
+              <Text size={16} style={styles.title}>
+                {`Friend Requests`}
+              </Text>
+              <Block flex>
+                <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
+                  <Block style={styles.rows}>
+                    <FriendRequestListItem
+                      navigation={navigation}
+                      name={'Friend'}
+                    />
+                    <FriendRequestListItem
+                      navigation={navigation}
+                      name={'Julian'}
+                    />
+                    <FriendRequestListItem
+                      navigation={navigation}
+                      name={'Steph'}
+                    />
+                  </Block>
+                </Block>
               </Block>
-            </Block>
-          </Block>
+              <Text size={16} style={styles.title}>
+                {`${t('screen_titles.friends')}`}
+              </Text>
+              <Block flex>
+                <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
+                  <Block style={styles.rows}>
+                    <FriendListItem navigation={navigation} name={'Friend'} />
+                    <FriendListItem navigation={navigation} name={'Julian'} />
+                    <FriendListItem navigation={navigation} name={'Steph'} />
+                  </Block>
+                </Block>
+              </Block>
+            </>
+          )}
         </ScrollView>
       </Block>
     </>
@@ -163,29 +208,97 @@ const styles = StyleSheet.create({
   },
 });
 
+////////////////////////////////////////////////////////////////
+/////////////////////// Redux Mapping //////////////////////////
+////////////////////////////////////////////////////////////////
+
 const mapStateToProps = (state: RootState) => {
+  console.log(state.friends);
   return {
-    profileInfo: state.profile,
+    friendsState: state.friends,
   };
 };
 
 const mapDispatchToProps = (
   dispatch: ThunkDispatch<
     RootState,
-    GetBasicProfileFulfilled | ValidationError,
+    SearchUsersFulfilled | ValidationError,
     Action
   >,
 ) => {
   return {
-    onGetBasicProfile: (arg: string) => dispatch(getBasicProfile(arg)),
+    onSearchUsers: (arg: string) => dispatch(searchUsers(arg)),
   };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Friends);
 
 ////////////////////////////////////////////////////////////////
+////////////////////////// Types ///////////////////////////////
+////////////////////////////////////////////////////////////////
+
+type Props = {
+  navigation: any;
+  friendsState: FriendsStateType;
+  onSearchUsers: any;
+};
+
+////////////////////////////////////////////////////////////////
 //////////////////////// Components ////////////////////////////
 ////////////////////////////////////////////////////////////////
+
+const NewFriendSearchListItem = ({username, isFriend, avatar}) => {
+  return (
+    <Block row space="between" style={{paddingVertical: 5}}>
+      <TouchableOpacity>
+        <Block row={true} flex style={styles.friendItemBlock}>
+          <Block middle>
+            {avatar === 'default' ? (
+              <Image source={Images.DefaultAvatar} style={styles.avatar} />
+            ) : (
+              <Image source={{uri: avatar}} style={styles.avatar} />
+            )}
+          </Block>
+          <Block middle>
+            <Text
+              style={styles.friendNameTitle}
+              size={14}
+              color={appTheme.COLORS.SECONDARY}>
+              {username}
+            </Text>
+          </Block>
+        </Block>
+      </TouchableOpacity>
+      <Block row center middle>
+        {!isFriend && (
+          <TouchableOpacity>
+            <Block row style={{paddingHorizontal: 10}}>
+              <Icon
+                color={appTheme.COLORS.SUCCESS}
+                name={'person-add'}
+                family="MaterialIcons"
+                size={20}
+                style={{paddingRight: 5}}
+              />
+              <Text color={appTheme.COLORS.SUCCESS}>Add friend</Text>
+            </Block>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity>
+          <Block row style={{paddingHorizontal: 10}}>
+            <Icon
+              style={{paddingRight: 5}}
+              name={'block'}
+              family="MaterialIcons"
+              size={20}
+            />
+            <Text>Block</Text>
+          </Block>
+        </TouchableOpacity>
+      </Block>
+    </Block>
+  );
+};
 
 const FriendListItem = ({navigation, name}) => {
   return (
@@ -208,7 +321,12 @@ const FriendListItem = ({navigation, name}) => {
       <Block row center middle>
         <TouchableOpacity>
           <Block row style={{paddingHorizontal: 10}}>
-            <Icon name={'block'} family="MaterialIcons" size={20} />
+            <Icon
+              name={'block'}
+              family="MaterialIcons"
+              size={20}
+              style={{paddingRight: 5}}
+            />
             <Text>Block</Text>
           </Block>
         </TouchableOpacity>
@@ -219,6 +337,7 @@ const FriendListItem = ({navigation, name}) => {
               family="MaterialIcons"
               size={20}
               color={appTheme.COLORS.ERROR}
+              style={{paddingRight: 5}}
             />
             <Text color={appTheme.COLORS.ERROR}>Delete</Text>
           </Block>
@@ -254,6 +373,7 @@ const FriendRequestListItem = ({navigation, name}) => {
               family="MaterialIcons"
               size={20}
               color={appTheme.COLORS.SUCCESS}
+              style={{paddingRight: 5}}
             />
             <Text color={appTheme.COLORS.SUCCESS}>Accept</Text>
           </Block>
@@ -265,6 +385,7 @@ const FriendRequestListItem = ({navigation, name}) => {
               family="MaterialIcons"
               size={20}
               color={appTheme.COLORS.ERROR}
+              style={{paddingRight: 5}}
             />
             <Text color={appTheme.COLORS.ERROR}>Decline</Text>
           </Block>
@@ -272,19 +393,4 @@ const FriendRequestListItem = ({navigation, name}) => {
       </Block>
     </Block>
   );
-};
-
-////////////////////////////////////////////////////////////////
-////////////////////////// Types ///////////////////////////////
-////////////////////////////////////////////////////////////////
-
-type StackScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'Settings',
-  'Settings'
->;
-
-type Props = StackScreenProps & {
-  profileInfo: ProfileStateType;
-  onGetBasicProfile: any;
 };

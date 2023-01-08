@@ -181,6 +181,12 @@ const Settings: React.FC<Props> = ({
                   icon={'chevron-right'}
                   destination={'ChangePassword'}
                 />
+                <SettingListItem
+                  navigation={navigation}
+                  text={`Blocked Users`}
+                  icon={'chevron-right'}
+                  destination={'ChangePassword'}
+                />
               </Block>
             </Block>
           </Block>

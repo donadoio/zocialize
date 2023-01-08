@@ -30,8 +30,6 @@ const AppScreens = () => {
   const dispatch: AppDispatch = useDispatch();
   const authInfo: AuthStateType = useSelector(getAuthInfo);
   const socketInfo: SocketStateType = useSelector(getSocketInfo);
-  const [socket, setSocket] = useState<any>(null);
-  const [socketId, setSocketId] = useState<any>('');
 
   // Check tokens on each screen change
   const onScreenChange: () => void = async () => {
