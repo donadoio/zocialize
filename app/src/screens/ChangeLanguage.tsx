@@ -35,6 +35,8 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './NavigatorSettingsScreen';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
 import {ValidationError} from '../redux/slices/authSlice';
+import {useTranslation} from 'react-i18next';
+import {changeLanguage} from 'i18next';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -64,30 +66,8 @@ const Settings: React.FC<Props> = ({navigation}: Props) => {
           <Block flex>
             <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
               <Block style={styles.rows}>
-                <SettingListItem
-                  navigation={navigation}
-                  text={'Change Avatar'}
-                  icon={'chevron-right'}
-                  destination={'ChangeAvatar'}
-                />
-                <SettingListItem
-                  navigation={navigation}
-                  text={'Change Profile Color'}
-                  icon={'chevron-right'}
-                  destination={'ChangeProfileColor'}
-                />
-                <SettingListItem
-                  navigation={navigation}
-                  text={'Change Langauge'}
-                  icon={'chevron-right'}
-                  destination={'ChangeProfileColor'}
-                />
-                <SettingListItem
-                  navigation={navigation}
-                  text={'Change Password'}
-                  icon={'chevron-right'}
-                  destination={'ChangePassword'}
-                />
+                <LanguageListItem navigation={navigation} text={'en'} />
+                <LanguageListItem navigation={navigation} text={'es'} />
               </Block>
             </Block>
           </Block>
@@ -168,24 +148,25 @@ const styles = StyleSheet.create({
 
 export default Settings;
 
-const SettingListItem = ({navigation, text, icon, destination}) => {
+const LanguageListItem = ({navigation, text}) => {
+  const {i18n} = useTranslation();
   return (
     <TouchableOpacity
       style={{paddingVertical: 15}}
-      onPress={() => navigation.navigate(destination)}>
-      <Block row middle space="between" style={{paddingTop: 7}}>
+      onPress={() => changeLanguage(text)}>
+      <Block row style={{paddingTop: 7}}>
+        <View style={{paddingRight: 15, width: 30}}>
+          {i18n.language === text && (
+            <Icon name={'check'} family="MaterialIcons" size={16} />
+          )}
+        </View>
         <Text
           style={{fontFamily: 'montserrat-regular'}}
           size={16}
           color={appTheme.COLORS.TEXT}>
-          {text}
+          {text === 'en' && 'English'}
+          {text === 'es' && 'Spanish'}
         </Text>
-        <Icon
-          name={icon}
-          family="MaterialIcons"
-          style={{paddingRight: 15}}
-          size={16}
-        />
       </Block>
     </TouchableOpacity>
   );
