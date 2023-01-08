@@ -72,7 +72,7 @@ const Settings: React.FC<Props> = ({
       <Block>
         <NavBar
           back={false}
-          title={`${t('screen_titles.change_password')}`}
+          title={`${t('screen_titles.settings')}`}
           style={styles.navbar}
           transparent={false}
           left={
