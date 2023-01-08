@@ -19,6 +19,7 @@ import { User } from '@prisma/client';
 import { LoginType } from 'types/LoginType';
 import { ConfirmEmailType, RegisterAccountType } from 'types/';
 import { ChangePasswordType } from '../../types/ChangePasswordType';
+import { WsException } from '@nestjs/websockets';
 
 // Custom Class Validator Types
 
@@ -291,6 +292,29 @@ export class AuthService {
     } catch (error) {
       //console.log('Error in signTokens()');
       throw error;
+    }
+  }
+
+  // Socket authentification
+  async verifyWsToken(token: string): Promise<User | null> {
+    try {
+      const payload = await this.jwt.verify(token, {
+        secret: `${process.env.REFRESH_TOKEN_SECRET}`,
+      });
+      const user: User = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
+
+      if (!user) {
+        console.log('User not found');
+        throw new WsException('Unauthorized access');
+      }
+
+      return user;
+    } catch (err) {
+      console.log('Caught error');
+      console.log(err);
+      throw new WsException(err.message);
     }
   }
 }

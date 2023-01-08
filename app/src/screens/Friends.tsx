@@ -51,17 +51,6 @@ const iPhoneX = () =>
   Platform.OS === 'ios' &&
   (height === 812 || width === 812 || height === 896 || width === 896);
 
-type StackScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'Settings',
-  'Settings'
->;
-
-type Props = StackScreenProps & {
-  profileInfo: ProfileStateType;
-  onGetBasicProfile: any;
-};
-
 const Friends: React.FC<Props> = ({
   navigation,
   profileInfo,
@@ -194,6 +183,10 @@ const mapDispatchToProps = (
 
 export default connect(mapStateToProps, mapDispatchToProps)(Friends);
 
+////////////////////////////////////////////////////////////////
+//////////////////////// Components ////////////////////////////
+////////////////////////////////////////////////////////////////
+
 const FriendListItem = ({navigation, name}) => {
   return (
     <Block row space="between" style={{paddingVertical: 5}}>
@@ -279,4 +272,19 @@ const FriendRequestListItem = ({navigation, name}) => {
       </Block>
     </Block>
   );
+};
+
+////////////////////////////////////////////////////////////////
+////////////////////////// Types ///////////////////////////////
+////////////////////////////////////////////////////////////////
+
+type StackScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  'Settings',
+  'Settings'
+>;
+
+type Props = StackScreenProps & {
+  profileInfo: ProfileStateType;
+  onGetBasicProfile: any;
 };
