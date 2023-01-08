@@ -9,6 +9,9 @@ A social app for mobile (initially only Android) that's sort of a hybrid between
 - [x] Change profile header color
 - [x] Change language en/es
 - [x] Change password
+- [x] Socket connection
+
+#### Up Next: Friend system (invite, list, blocked, etc)
 
 ## Instructions to build project: 
 
