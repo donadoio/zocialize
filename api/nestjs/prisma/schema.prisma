@@ -16,41 +16,17 @@ model User {
   updatedAt    DateTime @updatedAt
   lastSocketId String?
 
-  username          String          @unique
-  usernameLowercase String          @unique
-  email             String          @unique
-  confirmed         Boolean         @default(false)
+  username          String  @unique
+  usernameLowercase String  @unique
+  email             String  @unique
+  confirmed         Boolean @default(false)
   hash              String
-  avatar            String          @default("default")
-  profileColor      String          @default("default")
+  avatar            String  @default("default")
+  profileColor      String  @default("default")
   refreshTokenHash  String?
-  friends           Friend[]        @relation("friend")
-  friendRequests    FriendRequest[] @relation("friendRequest")
-  blocked           Blocked[]       @relation("blocked")
+  friends           Int[]
+  blocked           Int[]
+  friendRequests    Int[]
 
   @@map("users")
-}
-
-model Friend {
-  userFriend User   @relation("friend", fields: [userId], references: [id])
-  userId     Int
-  username   String
-
-  @@id([userId])
-}
-
-model FriendRequest {
-  userFriendRequest User   @relation("friendRequest", fields: [userId], references: [id])
-  userId            Int
-  username          String
-
-  @@id([userId])
-}
-
-model Blocked {
-  userBlocked User   @relation("blocked", fields: [userId], references: [id])
-  userId      Int
-  username    String
-
-  @@id([userId])
 }

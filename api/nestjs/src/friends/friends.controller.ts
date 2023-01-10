@@ -34,4 +34,14 @@ export class FriendsController {
       throw e;
     }
   }
+
+  @Post('getblockedusers')
+  @HttpCode(HttpStatus.OK)
+  async getBlockedUsers(@Req() req: ReqExtractId) {
+    try {
+      const result = await this.friendsService.getBlockedUsers(1);
+    } catch (e) {
+      throw e;
+    }
+  }
 }
