@@ -117,12 +117,13 @@ const Friends: React.FC<Props> = ({
               <Block flex>
                 <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
                   <Block style={styles.rows}>
-                    {friendsState.userSearchResults.map(element => {
+                    {friendsState.userSearchResults.map((element, id) => {
                       return (
                         <NewFriendSearchListItem
                           username={element.username}
                           isFriend={false}
                           avatar={element.avatar}
+                          key={id}
                         />
                       );
                     })}
@@ -270,20 +271,6 @@ const NewFriendSearchListItem = ({username, isFriend, avatar}) => {
         </Block>
       </TouchableOpacity>
       <Block row center middle>
-        {!isFriend && (
-          <TouchableOpacity>
-            <Block row style={{paddingHorizontal: 10}}>
-              <Icon
-                color={appTheme.COLORS.SUCCESS}
-                name={'person-add'}
-                family="MaterialIcons"
-                size={20}
-                style={{paddingRight: 5}}
-              />
-              <Text color={appTheme.COLORS.SUCCESS}>Add friend</Text>
-            </Block>
-          </TouchableOpacity>
-        )}
         <TouchableOpacity>
           <Block row style={{paddingHorizontal: 10}}>
             <Icon
@@ -293,6 +280,18 @@ const NewFriendSearchListItem = ({username, isFriend, avatar}) => {
               size={20}
             />
             <Text>Block</Text>
+          </Block>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Block row style={{paddingHorizontal: 10}}>
+            <Icon
+              color={appTheme.COLORS.SUCCESS}
+              name={'person-add'}
+              family="MaterialIcons"
+              size={20}
+              style={{paddingRight: 5}}
+            />
+            <Text color={appTheme.COLORS.SUCCESS}>Add friend</Text>
           </Block>
         </TouchableOpacity>
       </Block>
@@ -326,8 +325,9 @@ const FriendListItem = ({navigation, name}) => {
               family="MaterialIcons"
               size={20}
               style={{paddingRight: 5}}
+              color={appTheme.COLORS.MUTED}
             />
-            <Text>Block</Text>
+            <Text color={appTheme.COLORS.MUTED}>Block</Text>
           </Block>
         </TouchableOpacity>
         <TouchableOpacity>
