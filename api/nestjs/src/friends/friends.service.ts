@@ -49,9 +49,10 @@ export class FriendsService {
     } else {
       await this.addToFriendRequest(target, user);
     }
-    return (
-      user.username + ' added ' + target.username + ' to his friendRequests'
-    );
+    return {
+      ...(await this.getFriends(userId)),
+      ...(await this.getFriendRequests(userId)),
+    };
   }
 
   async removeFriend(userId: number, targetId: number) {
@@ -63,9 +64,7 @@ export class FriendsService {
     await this.deleteFromFriendList(user, target);
     await this.deleteFromFriendList(target, user);
 
-    return (
-      user.username + ' removed: ' + target.username + ' from his friendlist'
-    );
+    return await this.getFriends(userId);
   }
 
   async rejectRequest(userId: number, targetId: number) {
@@ -74,15 +73,13 @@ export class FriendsService {
 
     await this.deleteFromFriendRequests(user, target);
 
-    return (
-      user.username + ' rejected the friend request from: ' + target.username
-    );
+    return await this.getFriendRequests(userId);
   }
 
-  async searchUsers(ownUsername: string, query: string) {
+  async searchUsers(id: number, ownUsername: string, query: string) {
     try {
       const queryLower: string = query.toLowerCase();
-      const results = await this.prisma.user.findMany({
+      const list = await this.prisma.user.findMany({
         where: {
           usernameLowercase: {
             contains: queryLower,
@@ -97,6 +94,13 @@ export class FriendsService {
           avatar: true,
         },
       });
+      let results = [];
+      for (let i: number = 0; i < list.length; i++) {
+        results.push({
+          ...list[i],
+          isFriend: await this.isFriend(id, list[i].id),
+        });
+      }
       return results;
     } catch (e) {
       throw e;
@@ -104,7 +108,7 @@ export class FriendsService {
   }
 
   // Top level getters
-  async getFriendRequest(userId: number) {
+  async getFriendRequests(userId: number) {
     const user = await this.getUserFromDb(userId, 'getFriends');
     let tempUser;
 
@@ -123,7 +127,27 @@ export class FriendsService {
         avatar: tempUser.avatar,
       });
     }
-    return friendRequests;
+    return { friendRequests: friendRequests };
+  }
+
+  async getFriends(userId: number) {
+    const user = await this.getUserFromDb(userId, 'getFriends');
+    let tempUser;
+    let friends: [{ id: number; username: string; avatar: string }?] = [];
+
+    for (let i = 0; i < user.friends.length; i++) {
+      tempUser = await this.prisma.user.findUnique({
+        where: {
+          id: user.friends[i],
+        },
+      });
+      friends.push({
+        id: tempUser.id,
+        username: tempUser.username,
+        avatar: tempUser.avatar,
+      });
+    }
+    return { friends: friends };
   }
 
   // Helper functions
@@ -173,5 +197,18 @@ export class FriendsService {
         },
       },
     });
+  }
+
+  async isFriend(userId: number, targetId: number): Promise<boolean> {
+    const user: User = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (user) {
+      for (let i: number = 0; i < user.friends.length; i++) {
+        if (targetId === user.friends[i]) return true;
+      }
+      return false;
+    }
+    return false;
   }
 }

@@ -32,12 +32,18 @@ import {ThunkDispatch, Action} from '@reduxjs/toolkit';
 import {ValidationError} from '../redux/slices/authSlice';
 import {useTranslation} from 'react-i18next';
 import {
+  addFriend,
+  AddFriendFulfilled,
   clearSearchUsersResults,
   FriendsStateType,
-  getUserSearchResults,
+  getFriendRequests,
+  GetFriendRequestsFulfilled,
+  getFriends,
+  GetFriendsFulfilled,
+  rejectRequest,
+  removeFriend,
   searchUsers,
   SearchUsersFulfilled,
-  UserSearchInfo,
 } from '../redux/slices/friendsSlice';
 import {useIsFocused} from '@react-navigation/native';
 
@@ -51,12 +57,23 @@ const iPhoneX = () =>
 const Friends: React.FC<Props> = ({
   navigation,
   onSearchUsers,
+  onGetFriends,
+  onGetFriendRequests,
+  onAddFriend,
+  onRemoveFriend,
+  onRejectRequest,
   friendsState,
 }: Props) => {
   const dispatch: AppDispatch = useDispatch();
   const isFocused: boolean = useIsFocused();
   const [searchNewFriendsQuery, setSearchNewFriendsQuery] =
     useState<string>('');
+  // Mounting necessary data
+  useEffect(() => {
+    onGetFriends('Friends');
+    onGetFriendRequests('Friends');
+  }, []);
+  // Other useEffects
   useEffect(() => {
     if (searchNewFriendsQuery.length > 3) {
       onSearchUsers(searchNewFriendsQuery);
@@ -120,9 +137,13 @@ const Friends: React.FC<Props> = ({
                     {friendsState.userSearchResults.map((element, id) => {
                       return (
                         <NewFriendSearchListItem
+                          id={element.id}
                           username={element.username}
                           isFriend={false}
                           avatar={element.avatar}
+                          onPress={() => {
+                            onAddFriend(element.id);
+                          }}
                           key={id}
                         />
                       );
@@ -134,39 +155,61 @@ const Friends: React.FC<Props> = ({
           ) : null}
           {friendsState && !friendsState.userSearchResults.length && (
             <>
-              <Text size={16} style={styles.title}>
-                {`Friend Requests`}
-              </Text>
-              <Block flex>
-                <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
-                  <Block style={styles.rows}>
-                    <FriendRequestListItem
-                      navigation={navigation}
-                      name={'Friend'}
-                    />
-                    <FriendRequestListItem
-                      navigation={navigation}
-                      name={'Julian'}
-                    />
-                    <FriendRequestListItem
-                      navigation={navigation}
-                      name={'Steph'}
-                    />
+              {friendsState.friendRequests.length ? (
+                <>
+                  <Text size={16} style={styles.title}>
+                    {`Friend Requests`}
+                  </Text>
+                  <Block flex>
+                    <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
+                      <Block style={styles.rows}>
+                        {friendsState.friendRequests.map((element, id) => {
+                          return (
+                            <FriendRequestListItem
+                              id={element.id}
+                              username={element.username}
+                              avatar={element.avatar}
+                              key={id}
+                              onPressAccept={() => {
+                                onAddFriend(element.id);
+                              }}
+                              onPressDecline={() => {
+                                onRejectRequest(element.id);
+                              }}
+                            />
+                          );
+                        })}
+                      </Block>
+                    </Block>
                   </Block>
-                </Block>
-              </Block>
-              <Text size={16} style={styles.title}>
-                {`${t('screen_titles.friends')}`}
-              </Text>
-              <Block flex>
-                <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
-                  <Block style={styles.rows}>
-                    <FriendListItem navigation={navigation} name={'Friend'} />
-                    <FriendListItem navigation={navigation} name={'Julian'} />
-                    <FriendListItem navigation={navigation} name={'Steph'} />
+                </>
+              ) : null}
+              {friendsState.friends.length ? (
+                <>
+                  <Text size={16} style={styles.title}>
+                    {`${t('screen_titles.friends')}`}
+                  </Text>
+                  <Block flex>
+                    <Block style={{paddingHorizontal: theme.SIZES.BASE}}>
+                      <Block style={styles.rows}>
+                        {friendsState.friends.map((element, id) => {
+                          return (
+                            <FriendListItem
+                              id={element.id}
+                              username={element.username}
+                              avatar={element.avatar}
+                              key={id}
+                              onPressDelete={() => {
+                                onRemoveFriend(element.id);
+                              }}
+                            />
+                          );
+                        })}
+                      </Block>
+                    </Block>
                   </Block>
-                </Block>
-              </Block>
+                </>
+              ) : null}
             </>
           )}
         </ScrollView>
@@ -223,12 +266,21 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (
   dispatch: ThunkDispatch<
     RootState,
-    SearchUsersFulfilled | ValidationError,
+    | GetFriendsFulfilled
+    | SearchUsersFulfilled
+    | ValidationError
+    | GetFriendRequestsFulfilled
+    | AddFriendFulfilled,
     Action
   >,
 ) => {
   return {
     onSearchUsers: (arg: string) => dispatch(searchUsers(arg)),
+    onGetFriends: (arg: string) => dispatch(getFriends(arg)),
+    onGetFriendRequests: (arg: string) => dispatch(getFriendRequests(arg)),
+    onAddFriend: (arg: number) => dispatch(addFriend(arg)),
+    onRemoveFriend: (arg: number) => dispatch(removeFriend(arg)),
+    onRejectRequest: (arg: number) => dispatch(rejectRequest(arg)),
   };
 };
 
@@ -242,13 +294,18 @@ type Props = {
   navigation: any;
   friendsState: FriendsStateType;
   onSearchUsers: any;
+  onGetFriends: any;
+  onGetFriendRequests: any;
+  onAddFriend: any;
+  onRemoveFriend: any;
+  onRejectRequest: any;
 };
 
 ////////////////////////////////////////////////////////////////
 //////////////////////// Components ////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-const NewFriendSearchListItem = ({username, isFriend, avatar}) => {
+const NewFriendSearchListItem = ({id, username, isFriend, avatar, onPress}) => {
   return (
     <Block row space="between" style={{paddingVertical: 5}}>
       <TouchableOpacity>
@@ -282,24 +339,26 @@ const NewFriendSearchListItem = ({username, isFriend, avatar}) => {
             <Text>Block</Text>
           </Block>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Block row style={{paddingHorizontal: 10}}>
-            <Icon
-              color={appTheme.COLORS.SUCCESS}
-              name={'person-add'}
-              family="MaterialIcons"
-              size={20}
-              style={{paddingRight: 5}}
-            />
-            <Text color={appTheme.COLORS.SUCCESS}>Add friend</Text>
-          </Block>
-        </TouchableOpacity>
+        {!isFriend ? (
+          <TouchableOpacity onPress={onPress}>
+            <Block row style={{paddingHorizontal: 10}}>
+              <Icon
+                color={appTheme.COLORS.SUCCESS}
+                name={'person-add'}
+                family="MaterialIcons"
+                size={20}
+                style={{paddingRight: 5}}
+              />
+              <Text color={appTheme.COLORS.SUCCESS}>Add friend</Text>
+            </Block>
+          </TouchableOpacity>
+        ) : null}
       </Block>
     </Block>
   );
 };
 
-const FriendListItem = ({navigation, name}) => {
+const FriendListItem = ({id, username, avatar, onPressDelete}) => {
   return (
     <Block row space="between" style={{paddingVertical: 5}}>
       <TouchableOpacity>
@@ -312,7 +371,7 @@ const FriendListItem = ({navigation, name}) => {
               style={styles.friendNameTitle}
               size={14}
               color={appTheme.COLORS.SECONDARY}>
-              {name}
+              {username}
             </Text>
           </Block>
         </Block>
@@ -330,7 +389,7 @@ const FriendListItem = ({navigation, name}) => {
             <Text color={appTheme.COLORS.MUTED}>Block</Text>
           </Block>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPressDelete}>
           <Block row style={{paddingHorizontal: 10}}>
             <Icon
               name={'delete'}
@@ -347,7 +406,13 @@ const FriendListItem = ({navigation, name}) => {
   );
 };
 
-const FriendRequestListItem = ({navigation, name}) => {
+const FriendRequestListItem = ({
+  id,
+  username,
+  avatar,
+  onPressAccept,
+  onPressDecline,
+}) => {
   return (
     <Block row space="between" style={{paddingVertical: 5}}>
       <TouchableOpacity>
@@ -360,13 +425,13 @@ const FriendRequestListItem = ({navigation, name}) => {
               style={styles.friendNameTitle}
               size={14}
               color={appTheme.COLORS.SECONDARY}>
-              {name}
+              {username}
             </Text>
           </Block>
         </Block>
       </TouchableOpacity>
       <Block row center middle>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPressAccept}>
           <Block row style={{paddingHorizontal: 10}}>
             <Icon
               name={'check'}
@@ -378,7 +443,7 @@ const FriendRequestListItem = ({navigation, name}) => {
             <Text color={appTheme.COLORS.SUCCESS}>Accept</Text>
           </Block>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPressDecline}>
           <Block row style={{paddingHorizontal: 10}}>
             <Icon
               name={'close'}
