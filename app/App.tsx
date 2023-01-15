@@ -7,7 +7,7 @@ import {
   AuthStateType,
   authUpdateTokens,
   getAuthInfo,
-} from './src/redux/slices/authSlice';
+} from './src/redux/slices/auth/authSlice';
 import NavigatorAuthenticatedScreen from './src/screens/NavigatorAuthenticatedScreen';
 import NavigatorUnauthenticatedScreen from './src/screens/NavigatorUnauthenticatedScreen';
 import {NavigationContainer} from '@react-navigation/native';

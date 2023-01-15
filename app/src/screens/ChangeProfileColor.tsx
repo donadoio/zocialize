@@ -15,12 +15,9 @@ import {
 } from 'react-native';
 import {Block, Text, theme, Button as GaButton} from 'galio-framework';
 
-import {Button, Icon} from '../components';
+import {Button} from '../components';
 import {Images, appTheme} from '../constants';
-import {HeaderHeight} from '../constants/utils';
 import LinearGradient from 'react-native-linear-gradient';
-import Post from '../components/Post';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 import ColorPicker from 'react-native-wheel-color-picker';
 import {connect, useDispatch, useSelector} from 'react-redux';
@@ -28,13 +25,11 @@ import {
   changeProfileColor,
   getBasicProfile,
   GetBasicProfileFulfilled,
-  getBasicProfileInfo,
   ProfileStateType,
 } from '../redux/slices/profileSlice';
-import {AppDispatch, RootState} from '../redux/store';
+import {RootState} from '../redux/store';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
-import {ValidationError} from '../redux/slices/authSlice';
-import ConfirmEmail from './ConfirmEmail';
+import {ValidationError} from '../redux/slices/auth/types';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './NavigatorSettingsScreen';
 

@@ -34,7 +34,7 @@ import {AppDispatch, RootState} from '../redux/store';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './NavigatorSettingsScreen';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
-import {ValidationError} from '../redux/slices/authSlice';
+import {ValidationError} from '../redux/slices/auth/authSlice';
 import {useTranslation} from 'react-i18next';
 
 const {width, height} = Dimensions.get('screen');

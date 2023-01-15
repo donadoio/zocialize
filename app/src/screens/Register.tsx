@@ -25,12 +25,9 @@ import {RootStackParamList} from './NavigatorUnauthenticatedScreen';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  AuthStateType,
-  authUpdateErrorMsg,
-  getAuthInfo,
-  registerAccount,
-} from '../redux/slices/authSlice';
+import {authUpdateErrorMsg, getAuthInfo} from '../redux/slices/auth/authSlice';
+import {registerAccount} from '../redux/slices/auth/thunks';
+import {AuthStateType} from '../redux/slices/auth/types';
 import {AppDispatch} from '../redux/store';
 
 const {width, height} = Dimensions.get('screen');

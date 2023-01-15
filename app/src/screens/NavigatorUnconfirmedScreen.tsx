@@ -1,6 +1,5 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import {appTheme} from '../constants';
 import {useTranslation} from 'react-i18next';
 import ConfirmEmail from './ConfirmEmail';
 

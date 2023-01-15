@@ -29,23 +29,25 @@ import {Images, appTheme} from '../constants';
 import {connect, useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../redux/store';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
-import {ValidationError} from '../redux/slices/authSlice';
 import {useTranslation} from 'react-i18next';
-import {
-  addFriend,
-  AddFriendFulfilled,
-  clearSearchUsersResults,
-  FriendsStateType,
-  getFriendRequests,
-  GetFriendRequestsFulfilled,
-  getFriends,
-  GetFriendsFulfilled,
-  rejectRequest,
-  removeFriend,
-  searchUsers,
-  SearchUsersFulfilled,
-} from '../redux/slices/friendsSlice';
+import {clearSearchUsersResults} from '../redux/slices/friends/friendsSlice';
 import {useIsFocused} from '@react-navigation/native';
+import {ValidationError} from '../redux/slices/auth/types';
+import {
+  searchUsers,
+  getFriends,
+  getFriendRequests,
+  addFriend,
+  removeFriend,
+  rejectRequest,
+} from '../redux/slices/friends/thunks';
+import {
+  GetFriendsFulfilled,
+  SearchUsersFulfilled,
+  GetFriendRequestsFulfilled,
+  AddFriendFulfilled,
+  FriendsStateType,
+} from '../redux/slices/friends/types';
 
 const {width, height} = Dimensions.get('screen');
 

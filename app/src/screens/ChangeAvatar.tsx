@@ -25,7 +25,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import ColorPicker from 'react-native-wheel-color-picker';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
 import {connect} from 'react-redux';
-import {ValidationError} from '../redux/slices/authSlice';
+import {ValidationError} from '../redux/slices/auth/authSlice';
 import {
   GetBasicProfileFulfilled,
   getBasicProfile,

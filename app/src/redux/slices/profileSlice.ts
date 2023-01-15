@@ -1,7 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axios, {AxiosError} from 'axios';
 import {RootState} from '../store';
-import {ValidationError} from './authSlice';
+import {ValidationError} from './auth/authSlice';
 import {REACT_APP_BACKEND_URL} from '@env';
 
 // InitialState

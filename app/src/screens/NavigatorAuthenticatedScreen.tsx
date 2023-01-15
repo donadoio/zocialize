@@ -8,7 +8,7 @@ import React from 'react';
 import Home from './Home';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useDispatch} from 'react-redux';
-import {authLogout} from '../redux/slices/authSlice';
+import {authLogout} from '../redux/slices/auth/authSlice';
 import {AppDispatch} from '../redux/store';
 import {Dimensions, Image, StyleSheet} from 'react-native';
 import {appTheme, Images} from '../constants';

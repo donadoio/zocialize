@@ -24,15 +24,14 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {AppDispatch, RootState} from '../redux/store';
 import {connect, useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
+import {confirmEmail} from '../redux/slices/auth/thunks';
 import {
-  authLogout,
   AuthStateType,
-  confirmEmail,
   ConfirmEmailFulfilled,
-  getAuthInfo,
-  getTokens,
   ValidationError,
-} from '../redux/slices/authSlice';
+} from '../redux/slices/auth/types';
+import {getTokens} from '../redux/slices/auth/thunks';
+import {authLogout} from '../redux/slices/auth/authSlice';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {type RootStackParamList} from './NavigatorUnconfirmedScreen';
 import {ThunkDispatch} from 'redux-thunk';

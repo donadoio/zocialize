@@ -13,7 +13,7 @@ import {appTheme, Images} from '../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {REACT_APP_BACKEND_URL} from '@env';
 import {useDispatch, useSelector} from 'react-redux';
-import {AuthStateType, getAuthInfo} from '../redux/slices/authSlice';
+import {AuthStateType, getAuthInfo} from '../redux/slices/auth/authSlice';
 import Post from '../components/Post';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
