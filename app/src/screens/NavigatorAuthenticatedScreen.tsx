@@ -16,9 +16,9 @@ import Profile from './Profile';
 import {Block, Text} from 'galio-framework';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import NavigatorSettingsScreen from './NavigatorSettingsScreen';
-import {disconnectSocket} from '../redux/slices/socketSlice';
 import {useTranslation} from 'react-i18next';
 import Friends from './Friends';
+import {disconnectSocket} from '../redux/slices/socket/socketSlice';
 const {width} = Dimensions.get('screen');
 const Drawer = createDrawerNavigator();
 

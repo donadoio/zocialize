@@ -23,19 +23,19 @@ import Post from '../components/Post';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 import ColorPicker from 'react-native-wheel-color-picker';
-import {
-  getBasicProfile,
-  GetBasicProfileFulfilled,
-  getBasicProfileInfo,
-  ProfileStateType,
-} from '../redux/slices/profileSlice';
+
 import {connect, useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../redux/store';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './NavigatorSettingsScreen';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
-import {ValidationError} from '../redux/slices/auth/authSlice';
 import {useTranslation} from 'react-i18next';
+import {ValidationError} from '../redux/slices/auth/types';
+import {getBasicProfile} from '../redux/slices/profile/thunks/getBasicProfile';
+import {
+  ProfileStateType,
+  GetBasicProfileFulfilled,
+} from '../redux/slices/profile/types';
 
 const {width, height} = Dimensions.get('screen');
 

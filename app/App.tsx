@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react';
 import {
   authLogout,
   authSessionExpired,
-  AuthStateType,
   authUpdateTokens,
   getAuthInfo,
 } from './src/redux/slices/auth/authSlice';
@@ -23,8 +22,9 @@ import {
   disconnectSocket,
   getSocketInfo,
   initSocket,
-  SocketStateType,
-} from './src/redux/slices/socketSlice';
+} from './src/redux/slices/socket/socketSlice';
+import {AuthStateType} from './src/redux/slices/auth/types';
+import {SocketStateType} from './src/redux/slices/socket/types';
 
 const AppScreens = () => {
   const dispatch: AppDispatch = useDispatch();

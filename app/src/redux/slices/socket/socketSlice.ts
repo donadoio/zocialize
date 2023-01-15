@@ -1,9 +1,8 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import axios, {AxiosError} from 'axios';
-import {RootState} from '../store';
-import {ValidationError} from './authSlice';
+import {createSlice} from '@reduxjs/toolkit';
+import {RootState} from '../../store';
 import {REACT_APP_SOCKET_URL} from '@env';
 import {io} from 'socket.io-client';
+import {SocketStateType} from './types';
 
 // InitialState
 const initialState: SocketStateType = {
@@ -11,19 +10,11 @@ const initialState: SocketStateType = {
   socket: null,
 };
 
-// Types
-export type SocketStateType = {
-  id: string;
-  socket: any;
-};
-
 export const socketSlice = createSlice({
   name: 'socket',
   initialState,
   reducers: {
     initSocket: (state, action) => {
-      console.log('initSocket payload: ', action.payload);
-      console.log('backend socket: ', REACT_APP_SOCKET_URL);
       const socketOptions: any = {
         auth: {
           token: action.payload,

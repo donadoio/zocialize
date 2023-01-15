@@ -1,18 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  Dimensions,
-  ScrollView,
-  Image,
-  ImageBackground,
-  Platform,
-  View,
-  PermissionsAndroid,
-  Alert,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-} from 'react-native';
+import {StyleSheet, Dimensions, ScrollView, Image} from 'react-native';
 import {Block, Text, theme, Button as GaButton} from 'galio-framework';
 
 import {Button} from '../components';
@@ -20,18 +7,18 @@ import {Images, appTheme} from '../constants';
 import LinearGradient from 'react-native-linear-gradient';
 
 import ColorPicker from 'react-native-wheel-color-picker';
-import {connect, useDispatch, useSelector} from 'react-redux';
-import {
-  changeProfileColor,
-  getBasicProfile,
-  GetBasicProfileFulfilled,
-  ProfileStateType,
-} from '../redux/slices/profileSlice';
+import {connect} from 'react-redux';
 import {RootState} from '../redux/store';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
 import {ValidationError} from '../redux/slices/auth/types';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './NavigatorSettingsScreen';
+import {changeProfileColor} from '../redux/slices/profile/thunks/changeProfileColor';
+import {getBasicProfile} from '../redux/slices/profile/thunks/getBasicProfile';
+import {
+  ProfileStateType,
+  GetBasicProfileFulfilled,
+} from '../redux/slices/profile/types';
 
 const {width, height} = Dimensions.get('screen');
 

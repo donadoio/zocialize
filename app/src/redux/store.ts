@@ -1,6 +1,6 @@
 import {configureStore} from '@reduxjs/toolkit';
 import authReducer from './slices/auth/authSlice';
-import profileReducer from './slices/profileSlice';
+import profileReducer from './slices/profile/profileSlice';
 import socketReducer from './slices/socketSlice';
 import friendsReducer from './slices/friends/friendsSlice';
 import thunk from 'redux-thunk';

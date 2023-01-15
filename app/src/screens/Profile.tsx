@@ -1,29 +1,20 @@
 import React, {useEffect} from 'react';
-import {
-  StyleSheet,
-  Dimensions,
-  ScrollView,
-  Image,
-  ImageBackground,
-  Platform,
-  View,
-} from 'react-native';
+import {StyleSheet, Dimensions, ScrollView, Image, View} from 'react-native';
 import {Block, Text, theme, Button as GaButton} from 'galio-framework';
 
-import {Button} from '../components';
 import {Images, appTheme} from '../constants';
-import {HeaderHeight} from '../constants/utils';
 import LinearGradient from 'react-native-linear-gradient';
 import Post from '../components/Post';
 import {ThunkDispatch, Action} from '@reduxjs/toolkit';
 import {connect} from 'react-redux';
-import {ValidationError} from '../redux/slices/authSlice';
-import {
-  GetBasicProfileFulfilled,
-  getBasicProfile,
-  ProfileStateType,
-} from '../redux/slices/profileSlice';
+
 import {RootState} from '../redux/store';
+import {ValidationError} from '../redux/slices/auth/types';
+import {getBasicProfile} from '../redux/slices/profile/thunks/getBasicProfile';
+import {
+  ProfileStateType,
+  GetBasicProfileFulfilled,
+} from '../redux/slices/profile/types';
 
 const {width, height} = Dimensions.get('screen');
 
