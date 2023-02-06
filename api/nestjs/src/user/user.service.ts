@@ -131,4 +131,12 @@ export class UserService {
       throw error;
     }
   }
+
+  async notifyMe(id: number) {
+    try {
+      //await this.socket.notifyMe(id);
+    } catch (error) {
+      throw error;
+    }
+  }
 }

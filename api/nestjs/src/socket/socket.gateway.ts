@@ -34,6 +34,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let user: User;
     try {
       user = await this.auth.verifyWsToken(`${client.handshake.auth.token}`);
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          lastSocketId: client.id,
+        },
+      });
     } catch (e) {
       client.disconnect();
     }
@@ -41,4 +47,18 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: Socket) {
     console.log('Disconnection: ', client.id);
   }
+  // async notifyMe(id: number) {
+  //   let user: User;
+  //   try {
+  //     user = await this.auth.verifyWsToken(`${client.handshake.auth.token}`);
+  //     await this.prisma.user.update({
+  //       where: { id: user.id },
+  //       data: {
+  //         lastSocketId: client.id,
+  //       },
+  //     });
+  //   } catch (e) {
+  //     client.disconnect();
+  //   }
+  // }
 }

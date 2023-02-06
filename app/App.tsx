@@ -82,6 +82,9 @@ const AppScreens = () => {
       socketInfo.socket.on('disconnect', () => {
         dispatch(authLogout());
       });
+      socketInfo.socket.on('notification', () => {
+        console.log('Notification');
+      });
     }
   }, [socketInfo.socket]);
 

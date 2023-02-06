@@ -8,6 +8,10 @@ import {SocketStateType} from './types';
 const initialState: SocketStateType = {
   id: '',
   socket: null,
+  notification: {
+    message: '',
+    visibility: false,
+  },
 };
 
 export const socketSlice = createSlice({

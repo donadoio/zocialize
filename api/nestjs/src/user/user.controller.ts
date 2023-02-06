@@ -127,4 +127,18 @@ export class UserController {
       throw error;
     }
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('notifyme')
+  @HttpCode(HttpStatus.OK)
+  async notifyMe(@Req() req: ReqExtractId) {
+    console.log('GET / user/notifyme');
+    try {
+      const result = await this.UserService.notifyMe(req.user.sub);
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }
