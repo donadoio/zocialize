@@ -1,22 +1,26 @@
+import { VisibilityOff, Visibility } from "@mui/icons-material";
+import {
+  Container,
+  CssBaseline,
+  Box,
+  Avatar,
+  Typography,
+  TextField,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  Button,
+  Grid,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
 import { Action, ThunkDispatch } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { NavigateFunction, useNavigate } from "react-router-dom";
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Form,
-  Input,
-  InputGroupText,
-  InputGroup,
-  Container,
-  Col,
-  Row,
-} from "reactstrap";
-import TransparentFooter from "../../components/TransparentFooter";
+import { Link, NavigateFunction, useNavigate } from "react-router-dom";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import {
   authUpdateErrorMsg,
   getAuthInfo,
@@ -40,6 +44,7 @@ const Register: React.FC<Props> = function ({
 }: Props) {
   const [firstFocus, setFirstFocus] = React.useState(false);
   const [lastFocus, setLastFocus] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
   const navigate: NavigateFunction = useNavigate();
   const authInfo: AuthStateType = useSelector(getAuthInfo);
   const [username, setUsername] = useState<string>("");
@@ -58,6 +63,13 @@ const Register: React.FC<Props> = function ({
     };
   }, []);
   const dispatch: AppDispatch = useDispatch();
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
   const onPressRegister: () => void = () => {
     console.log(`user: ${username}`);
     console.log("email: ", email);
@@ -79,172 +91,128 @@ const Register: React.FC<Props> = function ({
     );
   };
   return (
-    <div className="page-header clear-filter" filter-color="blue">
-      <div
-        className="page-header-image"
-        style={{
-          backgroundImage: "url(" + require("../../assets/img/login.jpg") + ")",
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
-      ></div>
-      <div className="content">
-        <Container>
-          {/* Making alt sign up 
-          <Row>
-            <Col className="ml-auto mr-auto" md="5">
-              <div className="info info-horizontal">
-                <div className="icon icon-primary">
-                  <i className="now-ui-icons media-2_sound-wave"></i>
-                </div>
-                <div className="description">
-                  <h5 className="info-title">Lalalala</h5>
-                  <p className="description">
-                    We've created the marketing campaign of the website. It was
-                    a very interesting collaboration.
-                  </p>
-                </div>
-              </div>
-            </Col>
-            <Col md="5"></Col>
-          </Row>*/}
-          <Col className="ml-auto mr-auto" md="4">
-            <Card className="card-login card-plain">
-              <Form action="" className="form" method="">
-                <CardHeader className="text-center">
-                  <div className="logo-container">
-                    <img
-                      alt="..."
-                      src={require("../../assets/img/now-logo.png")}
-                    ></img>
-                    Zocialize
-                  </div>
-                  <h3 className="my-0 py-0">Get Started!</h3>
-                  {authInfo.error}
-                </CardHeader>
-                <CardBody className="mb-0 pb-0">
-                  <InputGroup
-                    className={
-                      "no-border input-lg" +
-                      (firstFocus ? " input-group-focus" : "")
-                    }
+      >
+        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Get Started
+        </Typography>
+        <Box component="form" onSubmit={() => {}} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
+            autoFocus
+          />
+          <FormControl variant="outlined" fullWidth margin="normal" required>
+            <InputLabel htmlFor="outlined-adornment-password">
+              Password
+            </InputLabel>
+            <OutlinedInput
+              type={showPassword ? "text" : "password"}
+              id="password"
+              autoComplete="current-password"
+              name="password"
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
                   >
-                    <div className="input-group-prepend">
-                      <span className="input-group-text">
-                        <i className="now-ui-icons users_single-02"></i>
-                      </span>
-                    </div>
-                    <Input
-                      placeholder="Username"
-                      type="text"
-                      onFocus={() => setFirstFocus(true)}
-                      onBlur={() => setFirstFocus(false)}
-                      value={username}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setUsername(e.target.value);
-                      }}
-                    ></Input>
-                  </InputGroup>
-                  <InputGroup
-                    className={
-                      "no-border input-lg" +
-                      (lastFocus ? " input-group-focus" : "")
-                    }
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
+            />
+          </FormControl>
+          <FormControl variant="outlined" fullWidth margin="normal" required>
+            <InputLabel htmlFor="outlined-adornment-password">
+              Confirm Password
+            </InputLabel>
+            <OutlinedInput
+              type={showPassword ? "text" : "password"}
+              id="password"
+              autoComplete="current-password"
+              name="password"
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
                   >
-                    <div className="input-group-prepend">
-                      <InputGroupText>
-                        <i className="now-ui-icons ui-1_email-85"></i>
-                      </InputGroupText>
-                    </div>
-                    <Input
-                      placeholder="Email"
-                      type="text"
-                      onFocus={() => setLastFocus(true)}
-                      onBlur={() => setLastFocus(false)}
-                      value={email}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setEmail(e.target.value);
-                      }}
-                    ></Input>
-                  </InputGroup>
-                  <InputGroup
-                    className={
-                      "no-border input-lg" +
-                      (lastFocus ? " input-group-focus" : "")
-                    }
-                  >
-                    <div className="input-group-prepend">
-                      <InputGroupText>
-                        <i className="now-ui-icons objects_key-25"></i>
-                      </InputGroupText>
-                    </div>
-                    <Input
-                      placeholder="Password"
-                      type="password"
-                      onFocus={() => setLastFocus(true)}
-                      onBlur={() => setLastFocus(false)}
-                      value={password}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setPassword(e.target.value);
-                      }}
-                    ></Input>
-                  </InputGroup>
-                  <InputGroup
-                    className={
-                      "no-border input-lg" +
-                      (lastFocus ? " input-group-focus" : "")
-                    }
-                  >
-                    <div className="input-group-prepend">
-                      <InputGroupText>
-                        <i className="now-ui-icons objects_key-25"></i>
-                      </InputGroupText>
-                    </div>
-                    <Input
-                      placeholder="Confirm Password"
-                      type="password"
-                      onFocus={() => setLastFocus(true)}
-                      onBlur={() => setLastFocus(false)}
-                      value={confirmPassword}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setConfirmPassword(e.target.value);
-                      }}
-                    ></Input>
-                  </InputGroup>
-                </CardBody>
-                <CardFooter className="text-center mt-0 pt-0">
-                  <Button
-                    block
-                    className="btn-round btn-primary"
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onPressRegister();
-                    }}
-                    size="lg"
-                  >
-                    Sign up
-                  </Button>
-                  <div className="pull-right">
-                    <h6>
-                      <a
-                        className="link"
-                        href="javascript(void)"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          navigate("/");
-                        }}
-                      >
-                        Already have an accout? Log in
-                      </a>
-                    </h6>
-                  </div>
-                </CardFooter>
-              </Form>
-            </Card>
-          </Col>
-        </Container>
-      </div>
-      <TransparentFooter />
-    </div>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
+            />
+          </FormControl>
+          <Grid item xs={12}>
+            <Checkbox value="allowExtraEmails" color="primary" />I agree with
+            the{" "}
+            <span
+              onClick={() => {
+                console.log("GEGE");
+              }}
+            >
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                terms and conditions
+              </a>
+            </span>
+            .
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Sign up
+          </Button>
+          <Grid container>
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Link to="/login">Already have an account? Sign in</Link>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
